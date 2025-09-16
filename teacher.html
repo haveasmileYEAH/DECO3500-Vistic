@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Classroom Collaboration (teacher)</title>
+    <link rel="stylesheet" href="/css/teacher.css">
+  </head>
+  <body>
+    <h1>Classroom Collaboration (teacher)</h1>
+
+    <div id="gameSelection">
+      <h2>Pick a question type</h2> <br/>
+      <button id="shortAnswer" class="button">Short Answer</button>
+      <button id="trueFalse" class="button">True False</button><br /><br />
+    </div>
+
+    <div id="short">
+      <h2>Short Answer Question</h2><br />
+      <form id="shortQuestion" action="">
+        <label for="question" style="font-size:30px;">Question:</label>
+        <input type="text" id="question"> <br />
+        <label for="answer" style="font-size:30px;">Answer:</label>
+        <input type="answer" id="answer"> <br />
+        <label for="timeLimit" style="font-size:30px;">Time Limit:</label>
+        <input type="range" step="5" min="10" max="90" id="timeLimit"> <br />
+        <input id="submit" type="submit">
+      </form>
+    </div>
+
+    <div id="truefalse">
+      <h2>True Or False Question</h2><br />
+      <form id="trueFalseQuestion" action="">
+        <label for="tfquestion" style="font-size:30px;">Question:</label>
+        <input type="text" id="tfquestion"> <br />
+        <span style="font-size:30px;">Answer:</span>
+        <input type="radio" name="tfanswer" value="true" id="tf_true">
+        <label for="tf_true" style="font-size:30px;">True</label>
+        <input type="radio" name="tfanswer" value="false" id="tf_false">
+        <label for="tf_false" style="font-size:30px;">False</label> <br />
+        <label for="tftimeLimit" style="font-size:30px;">Time Limit:</label>
+        <input type="range" step="5" min="10" max="90" id="tftimeLimit"> <br />
+        <input id="tfsubmit" type="submit">
+      </form>
+    </div>
+
+    <div id="gameSummary">
+      <p id="totalAnswers"></p>
+      <p id="correctAnswers"></p>
+      <p id="incorrectAnswers"></p>
+      <p id="correctUsers"></p>
+      <p id="correctAverage"></p>
+      <p id="incorrectUsers"></p>
+      <button id="reset">Submit Another Question</button>
+    </div>
+
+    <p id="timer"></p>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="/js/teacher.js"></script>
+  </body>
+</html>

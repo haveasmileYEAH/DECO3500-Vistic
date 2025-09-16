@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Classroom Collaboration (student)</title>
+    <link rel="stylesheet" href="/css/student.css">
+  </head>
+  <body>
+    <h1>Classroom Collaboration (student)</h1>  
+
+    <div id="greeting">
+      <p id="questionPending" style="font-size:30px;">Waiting for question....</p>
+      <label for="username" style="font-size:30px;">Enter Name:</label>
+      <input type="text" id="username">
+    </div>
+
+    <div id="shortAnswer">
+      <form id="shortanswers" action="">
+        Question: <span id="question" style="font-size:20px;"></span> <br />
+        <label for="answer" style="font-size:30px;">Answer:</label>
+        <input type="text" id="answer"> <br />
+        <input id="submitShort" type="submit" value="Submit">
+      </form>
+    </div>
+
+    <div id="trueOrFalse">
+      <form id="tfanswers" action="">
+        Question: <span id="tfquestion"></span> <br /><br />
+        <label style="margin-right:6px;">Answer:</label>
+        <input type="radio" name="tfanswer" value="true" id="s_tf_true">
+        <label for="s_tf_true">True</label>
+        <input type="radio" name="tfanswer" value="false" id="s_tf_false">
+        <label for="s_tf_false">False</label> <br />
+        <input id="submitTF" type="submit" value="Submit">
+      </form>
+    </div>
+
+    <div id="result"></div>
+    <div id="answertext"></div>  <br /><br />
+    <div id="timer"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="/js/student.js"></script>
+  </body>
+</html>

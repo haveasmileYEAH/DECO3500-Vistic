@@ -1,0 +1,25 @@
+{
+  "name": "socketio-kahoot",
+  "version": "1.0.0",
+  "description": "socketio quiz inspired by kahoot",
+  "main": "server.js",
+  "scripts": {
+    "test": "npm start",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mattmartian/SocketIO-Kahoot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mattmartian/SocketIO-Kahoot/issues"
+  },
+  "homepage": "https://github.com/mattmartian/SocketIO-Kahoot#readme",
+  "dependencies": {
+    "express": "^4.16.2",
+    "http": "0.0.0",
+    "socket.io": "^2.0.4"
+  }
+}
