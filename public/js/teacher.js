@@ -1,13 +1,10 @@
-// Teacher side: room + QR + ask + offline + leaderboard
+// Teacher: room + QR + add to bank + online quiz + leaderboard
 var socket = io();
 var currentRoom = "";
-var countdownTimer = null;
-var totalSeconds = 0;
 
 function genCode(n=6){
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  let s = "";
-  for (let i=0;i<n;i++) s += chars[Math.floor(Math.random()*chars.length)];
+  let s = ""; for (let i=0;i<n;i++) s += chars[Math.floor(Math.random()*chars.length)];
   return s;
 }
 function joinUrlFor(room){
@@ -19,95 +16,76 @@ function joinUrlFor(room){
 function drawQR(text){
   const canvas = document.getElementById("qrCanvas");
   if (!canvas || !window.QRCode) return;
-  // 清空画布
   const ctx = canvas.getContext("2d");
-  ctx.clearRect(0,0,canvas.width, canvas.height);
-  QRCode.toCanvas(canvas, text, {width:160, margin:1}, function(error){ if(error) console.error(error); });
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  QRCode.toCanvas(canvas, text, {width:160, margin:1}, function(err){ if(err) console.error(err); });
 }
-
-function show(el){ el.classList.remove("hidden"); el.setAttribute("aria-hidden","false"); }
-function hide(el){ el.classList.add("hidden"); el.setAttribute("aria-hidden","true"); }
+function show(id){ document.getElementById(id).classList.remove("hidden"); }
+function hide(id){ document.getElementById(id).classList.add("hidden"); }
 
 function startCountdown(seconds){
-  clearInterval(countdownTimer);
-  totalSeconds = Number(seconds)||0;
-  let remaining = totalSeconds;
-  const bar = $("#timerBar");
-  const text = $("#timer");
-  function tick(){
-    if (remaining <= 0){
-      bar.css("width", "0%");
-      text.text("");
-      clearInterval(countdownTimer);
-      return;
-    }
-    const pct = Math.max(0, Math.floor((remaining/totalSeconds)*100));
-    bar.css("width", pct + "%");
-    text.text(remaining + " sec");
-    remaining--;
-  }
-  tick();
-  countdownTimer = setInterval(tick, 1000);
+  let total = Number(seconds)||0, left = total;
+  const bar = $("#timerBar"), text = $("#timer");
+  bar.css("width", "100%"); text.text(total? total+" sec": "");
+  const t = setInterval(()=>{
+    left--; if (left<=0){ bar.css("width","0%"); text.text(""); clearInterval(t); return; }
+    bar.css("width", Math.floor(left/total*100)+"%"); text.text(left+" sec");
+  },1000);
 }
 
 function renderLeaderboard(rows){
-  const $tb = $("#leaderboard tbody");
-  $tb.empty();
-  rows.forEach(row=>{
-    $tb.append(`<tr><td>${row.rank}</td><td>${row.username}</td><td>${row.score}</td><td>${row.correctCount}</td><td>${row.avgTime}</td></tr>`);
+  const $tb = $("#leaderboard tbody"); $tb.empty();
+  (rows||[]).forEach(r=>{
+    $tb.append(`<tr><td>${r.rank}</td><td>${r.username}</td><td>${r.score}</td><td>${r.correctCount}</td><td>${r.avgTime}</td></tr>`);
   });
 }
 
 $(function(){
-  // 初始生成房间号
-  const $roomInput = $("#roomCode");
-  $("#genRoom").on("click", ()=>{
-    $roomInput.val(genCode());
-  });
+  // 房间
+  const $room = $("#roomCode");
+  $("#genRoom").on("click", ()=> $room.val(genCode()));
   $("#applyRoom").on("click", ()=>{
-    const r = ($roomInput.val()||"").trim().toUpperCase();
-    if(!r){ alert("Please enter a room code."); return; }
+    const r = ($room.val()||"").trim().toUpperCase();
+    if(!r) return alert("Enter room code");
     currentRoom = r;
     socket.emit("join", currentRoom);
     $("#roomCodeText").text(currentRoom);
     const url = joinUrlFor(currentRoom);
     $("#joinUrl").text(url);
     drawQR(url);
-    // 拿一次排行榜
     socket.emit("getLeaderboard", currentRoom);
   });
-  // 默认给一个
-  $roomInput.val(genCode());
+  $room.val(genCode());
 
-  // UI 切换
-  $("#shortAnswer").on("click", function(){
-    show(document.getElementById("short"));
-    hide(document.getElementById("truefalse"));
-  });
-  $("#trueFalse").on("click", function(){
-    show(document.getElementById("truefalse"));
-    hide(document.getElementById("short"));
-  });
-  $("#cancelShort").on("click", function(){
-    hide(document.getElementById("short"));
-  });
-  $("#cancelTF").on("click", function(){
-    hide(document.getElementById("truefalse"));
+  // 题库：加载数量
+  socket.emit("getQuestionBankCount");
+  socket.on("questionBankUpdated", ({count})=>{
+    $("#bankCount").text(count ?? 0);
   });
 
-  $("#reset").on("click", function(){
-    show(document.getElementById("gameSelection"));
-    hide(document.getElementById("short"));
-    hide(document.getElementById("truefalse"));
+  // 题库：新增
+  $("#bankForm").on("submit", (e)=>{
+    e.preventDefault();
+    const type = $('input[name="bkType"]:checked').val();
+    const q = $("#bkQ").val(), a = $("#bkA").val();
+    if (!q || !a) return alert("Fill question & answer");
+    socket.emit("addOfflineQuestion", { questionType:type, question:q, answer:a });
+  });
+  socket.on("addOfflineQuestionOK", (res)=>{
+    $("#bankMsg").text("Added ✓");
+    setTimeout(()=>$("#bankMsg").text(""), 1500);
+    $("#bkQ").val(""); $("#bkA").val("");
   });
 
-  // 发送题目（简答）
-  $("#shortQuestion").on("submit", function(){
-    if(!currentRoom){ alert("Apply a room first."); return false; }
-    hide(document.getElementById("gameSelection"));
-    hide(document.getElementById("short"));
-    show(document.getElementById("gameSummary"));
+  // 在线模式 UI
+  $("#shortAnswer").on("click", ()=>{ show("short"); hide("truefalse"); });
+  $("#trueFalse").on("click", ()=>{ show("truefalse"); hide("short"); });
+  $("#reset").on("click", ()=>{ show("gameSelection"); hide("short"); hide("truefalse"); });
 
+  // 在线：简答题
+  $("#shortQuestion").on("submit", ()=>{
+    if(!currentRoom) return alert("Apply room first");
+    hide("gameSelection"); hide("short"); show("gameSummary");
     socket.emit("submitquestion", {
       room: currentRoom,
       question: $("#question").val(),
@@ -119,13 +97,10 @@ $(function(){
     return false;
   });
 
-  // 发送题目（判断）
-  $("#trueFalseQuestion").on("submit", function(){
-    if(!currentRoom){ alert("Apply a room first."); return false; }
-    hide(document.getElementById("gameSelection"));
-    hide(document.getElementById("truefalse"));
-    show(document.getElementById("gameSummary"));
-
+  // 在线：判断题
+  $("#trueFalseQuestion").on("submit", ()=>{
+    if(!currentRoom) return alert("Apply room first");
+    hide("gameSelection"); hide("truefalse"); show("gameSummary");
     const tfAns = $('input[name="tfanswer"]:checked').val();
     socket.emit("submitquestion", {
       room: currentRoom,
@@ -138,61 +113,14 @@ $(function(){
     return false;
   });
 
-  // 线下答题录入 - 动态行
-  function addOfflineRow(){
-    const id = "r" + Math.random().toString(36).slice(2,7);
-    $("#offlineRows").append(`
-      <div class="offline-row" data-id="${id}">
-        <input class="input sm" placeholder="Name">
-        <select class="input sm">
-          <option value="true">Correct</option>
-          <option value="false">Incorrect</option>
-        </select>
-        <input class="input sm" type="number" min="0" placeholder="Time(s) optional">
-        <button type="button" class="btn btn-ghost rm">✕</button>
-      </div>
-    `);
-  }
-  $("#addRow").on("click", addOfflineRow);
-  addOfflineRow(); // 默认一行
-
-  $("#offlineForm").on("submit", function(e){
-    e.preventDefault();
-    if(!currentRoom){ alert("Apply a room first."); return; }
-    const rows = [];
-    $("#offlineRows .offline-row").each(function(){
-      const $inputs = $(this).find(".input");
-      const name = $inputs.eq(0).val();
-      const corr = $inputs.eq(1).val() === "true";
-      const tsecRaw = $inputs.eq(2).val();
-      const tsec = tsecRaw === "" ? null : Number(tsecRaw);
-      if(name){
-        rows.push({ username: name, correct: corr, timeTakenSec: tsec });
-      }
-    });
-    if(rows.length === 0){ alert("No rows to submit."); return; }
-    socket.emit("addOfflineAnswers", { room: currentRoom, results: rows });
-    // 清空以便继续录入
-    $("#offlineRows").empty();
-    addOfflineRow();
+  // 汇总 & 排行榜（在线）
+  socket.on("deliverData", (d)=>{
+    $("#totalAnswers").text(d.totalAnswers||0);
+    $("#correctAnswers").text(d.correctAnswers||0);
+    $("#incorrectAnswers").text(d.incorrectAnswers||0);
+    $("#correctUsers").text((d.correctUsers||[]).join(", ")||"—");
+    $("#incorrectUsers").text((d.incorrectUsers||[]).join(", ")||"—");
+    $("#correctAverage").text("%"+Math.round(Number(d.percentage)||0));
   });
-
-  $("#offlineRows").on("click", ".rm", function(){
-    $(this).closest(".offline-row").remove();
-  });
-
-  // 收统计
-  socket.on("deliverData", function(data){
-    $("#totalAnswers").text(data.totalAnswers || 0);
-    $("#correctAnswers").text(data.correctAnswers || 0);
-    $("#incorrectAnswers").text(data.incorrectAnswers || 0);
-    $("#correctUsers").text((data.correctUsers || []).join(", ") || "—");
-    $("#incorrectUsers").text((data.incorrectUsers || []).join(", ") || "—");
-    $("#correctAverage").text("%" + Math.round(Number(data.percentage) || 0));
-  });
-
-  // 收排行榜
-  socket.on("leaderboard", function(rows){
-    renderLeaderboard(rows || []);
-  });
+  socket.on("leaderboard", renderLeaderboard);
 });

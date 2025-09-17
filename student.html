@@ -32,58 +32,87 @@
             <button id="joinBtn" class="btn btn-primary">Join</button>
           </div>
         </div>
-        <p class="muted small">Tip: If you opened this page via QR, the room code might be filled automatically.</p>
+        <p class="muted small">If opened via QR, the room may be prefilled.</p>
       </section>
 
-      <!-- 等待区 -->
+      <!-- 模式选择 -->
+      <section id="modeCard" class="card hidden">
+        <h2 class="card-title">Choose Mode</h2>
+        <div class="btn-row">
+          <button id="modePractice" class="btn btn-primary">Practice (10 questions)</button>
+          <button id="modeOnline" class="btn">Online (wait for teacher)</button>
+        </div>
+      </section>
+
+      <!-- 等待区（在线模式） -->
       <section id="greeting" class="card hidden">
         <h2 class="card-title">Ready</h2>
         <p id="questionPending" class="muted">Waiting for a question…</p>
       </section>
 
-      <!-- 简答题 -->
+      <!-- 练习题（题库） -->
+      <section id="practiceCard" class="card hidden" aria-live="polite">
+        <h2 class="card-title">Practice Round</h2>
+        <p class="muted small">This round has 10 questions. Questions won’t repeat within the round.</p>
+
+        <div id="pShort" class="hidden">
+          <div class="question"><span class="label">Question</span><p id="pShortQ" class="qtext">—</p></div>
+          <form id="pShortForm" class="form-grid">
+            <label class="label" for="pShortA">Your Answer</label>
+            <input id="pShortA" class="input" placeholder="Type your answer…">
+            <div class="btn-row">
+              <button class="btn btn-primary" type="submit">Submit</button>
+              <button id="pNext1" class="btn" type="button">Next</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="pTF" class="hidden">
+          <div class="question"><span class="label">Question</span><p id="pTFQ" class="qtext">—</p></div>
+          <form id="pTFForm" class="form-grid">
+            <div class="radio-row">
+              <label class="radio"><input type="radio" name="pTFans" value="true"> True</label>
+              <label class="radio"><input type="radio" name="pTFans" value="false"> False</label>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-primary" type="submit">Submit</button>
+              <button id="pNext2" class="btn" type="button">Next</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="muted" id="pFeedback"></div>
+        <div class="muted small" id="pProgress"></div>
+      </section>
+
+      <!-- 在线题（与老师同步） -->
       <section id="shortAnswer" class="card hidden" aria-live="polite">
         <h2 class="card-title">Short Answer</h2>
-        <form id="shortanswers" class="form-grid" action="">
-          <div class="question">
-            <span class="label">Question</span>
-            <p id="question" class="qtext">—</p>
-          </div>
+        <form id="shortanswers" class="form-grid">
+          <div class="question"><span class="label">Question</span><p id="question" class="qtext">—</p></div>
           <label class="label" for="answer">Your Answer</label>
-          <input class="input" type="text" id="answer" placeholder="Type your answer…">
-          <div class="btn-row">
-            <input id="submitShort" class="btn btn-primary" type="submit" value="Submit">
-          </div>
+          <input class="input" type="text" id="answer">
+          <div class="btn-row"><input id="submitShort" class="btn btn-primary" type="submit" value="Submit"></div>
         </form>
-        <div class="progress">
-          <div id="sTimerBar1" class="progress-bar" style="width:0%"></div>
-        </div>
+        <div class="progress"><div id="sTimerBar1" class="progress-bar" style="width:0%"></div></div>
         <p id="timer" class="timer-text"></p>
       </section>
 
-      <!-- 判断题 -->
       <section id="trueOrFalse" class="card hidden" aria-live="polite">
         <h2 class="card-title">True / False</h2>
-        <form id="tfanswers" class="form-grid" action="">
-          <div class="question">
-            <span class="label">Question</span>
-            <p id="tfquestion" class="qtext">—</p>
-          </div>
+        <form id="tfanswers" class="form-grid">
+          <div class="question"><span class="label">Question</span><p id="tfquestion" class="qtext">—</p></div>
           <div class="radio-row">
             <label class="radio"><input type="radio" name="tfanswer" value="true"> True</label>
             <label class="radio"><input type="radio" name="tfanswer" value="false"> False</label>
           </div>
-          <div class="btn-row">
-            <input id="submitTF" class="btn btn-primary" type="submit" value="Submit">
-          </div>
+          <div class="btn-row"><input id="submitTF" class="btn btn-primary" type="submit" value="Submit"></div>
         </form>
-        <div class="progress">
-          <div id="sTimerBar2" class="progress-bar" style="width:0%"></div>
-        </div>
+        <div class="progress"><div id="sTimerBar2" class="progress-bar" style="width:0%"></div></div>
         <p id="timer2" class="timer-text"></p>
       </section>
 
-      <!-- 判题反馈（可选） -->
+      <!-- 判题反馈 -->
       <section id="feedbackCard" class="card hidden">
         <div id="result" class="badge">—</div>
         <div id="answertext" class="muted"></div>

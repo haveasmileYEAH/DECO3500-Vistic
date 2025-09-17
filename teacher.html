@@ -32,80 +32,73 @@
             <p class="muted">Students can join via code <b id="roomCodeText">—</b> or scan the QR.</p>
             <p class="muted small">Join URL: <span id="joinUrl">—</span></p>
           </div>
-          <div class="qr-box">
-            <canvas id="qrCanvas" width="160" height="160" aria-label="Room QR"></canvas>
-          </div>
+          <div class="qr-box"><canvas id="qrCanvas" width="160" height="160"></canvas></div>
         </div>
       </section>
 
-      <!-- 题型选择 -->
+      <!-- 题库管理（写入 JSON） -->
+      <section class="card">
+        <h2 class="card-title">Question Bank <span class="muted small">(<span id="bankCount">0</span> items)</span></h2>
+        <form id="bankForm" class="form-grid">
+          <label class="label">Type</label>
+          <div class="radio-row">
+            <label class="radio"><input type="radio" name="bkType" value="short" checked> Short</label>
+            <label class="radio"><input type="radio" name="bkType" value="truefalse"> True/False</label>
+          </div>
+
+          <label class="label" for="bkQ">Question</label>
+          <input id="bkQ" class="input" placeholder="Question text" required>
+
+          <label class="label" for="bkA">Answer</label>
+          <input id="bkA" class="input" placeholder='For TF use "true" or "false"' required>
+
+          <div class="btn-row">
+            <button class="btn btn-primary" type="submit">Add to Bank</button>
+          </div>
+          <p id="bankMsg" class="muted small"></p>
+        </form>
+      </section>
+
+      <!-- 在线出题（原来功能） -->
       <section id="gameSelection" class="card">
-        <h2 class="card-title">Select a question type</h2>
+        <h2 class="card-title">Select a question type (Online)</h2>
         <div class="btn-row">
           <button id="shortAnswer" class="btn btn-primary">Short Answer</button>
           <button id="trueFalse" class="btn">True / False</button>
         </div>
       </section>
 
-      <!-- 简答题 -->
+      <!-- 简答/判断（在线） -->
       <section id="short" class="card hidden" aria-hidden="true">
         <h2 class="card-title">Short Answer</h2>
         <form id="shortQuestion" class="form-grid" action="">
           <label class="label" for="question">Question</label>
-          <input class="input" type="text" id="question" placeholder="Type your question..." required>
-
+          <input class="input" type="text" id="question" required>
           <label class="label" for="answer">Correct Answer</label>
-          <input class="input" type="text" id="answer" placeholder="Type the correct answer..." required>
-
-          <label class="label" for="timeLimit">Time Limit <span class="hint">(10–90s)</span></label>
+          <input class="input" type="text" id="answer" required>
+          <label class="label" for="timeLimit">Time Limit</label>
           <input class="range" type="range" step="5" min="10" max="90" id="timeLimit" value="30">
-          <div class="range-ticks"><span>10s</span><span>50s</span><span>90s</span></div>
-
-          <div class="btn-row">
-            <input id="submit" class="btn btn-primary" type="submit" value="Send Question">
-            <button type="button" class="btn btn-ghost" id="cancelShort">Cancel</button>
-          </div>
+          <div class="btn-row"><input id="submit" class="btn btn-primary" type="submit" value="Send Question"></div>
         </form>
       </section>
 
-      <!-- 判断题 -->
       <section id="truefalse" class="card hidden" aria-hidden="true">
         <h2 class="card-title">True / False</h2>
         <form id="trueFalseQuestion" class="form-grid" action="">
           <label class="label" for="tfquestion">Question</label>
-          <input class="input" type="text" id="tfquestion" placeholder="Type your statement..." required>
-
+          <input class="input" type="text" id="tfquestion" required>
           <span class="label">Correct Answer</span>
           <div class="radio-row">
             <label class="radio"><input type="radio" name="tfanswer" value="true"> True</label>
             <label class="radio"><input type="radio" name="tfanswer" value="false"> False</label>
           </div>
-
-          <label class="label" for="tftimeLimit">Time Limit <span class="hint">(10–90s)</span></label>
+          <label class="label" for="tftimeLimit">Time Limit</label>
           <input class="range" type="range" step="5" min="10" max="90" id="tftimeLimit" value="30">
-          <div class="range-ticks"><span>10s</span><span>50s</span><span>90s</span></div>
-
-          <div class="btn-row">
-            <input id="tfsubmit" class="btn btn-primary" type="submit" value="Send Question">
-            <button type="button" class="btn btn-ghost" id="cancelTF">Cancel</button>
-          </div>
+          <div class="btn-row"><input id="tfsubmit" class="btn btn-primary" type="submit" value="Send Question"></div>
         </form>
       </section>
 
-      <!-- 线下答题录入 -->
-      <section class="card" id="offlineCard">
-        <h2 class="card-title">Add Offline Answers</h2>
-        <div class="muted small">Record paper-based answers to update the leaderboard.</div>
-        <form id="offlineForm">
-          <div id="offlineRows"></div>
-          <div class="btn-row">
-            <button type="button" id="addRow" class="btn">+ Add Row</button>
-            <button type="submit" class="btn btn-primary">Submit Offline Results</button>
-          </div>
-        </form>
-      </section>
-
-      <!-- 统计 + 排行榜 -->
+      <!-- 统计 & 排行榜（在线） -->
       <section id="gameSummary" class="card hidden" aria-live="polite">
         <div class="summary-header">
           <h2 class="card-title">Live Summary</h2>
@@ -113,46 +106,19 @@
         </div>
 
         <div class="stats">
-          <div class="stat">
-            <div class="stat-value" id="totalAnswers">0</div>
-            <div class="stat-label">Total</div>
-          </div>
-          <div class="stat ok">
-            <div class="stat-value" id="correctAnswers">0</div>
-            <div class="stat-label">Correct</div>
-          </div>
-          <div class="stat warn">
-            <div class="stat-value" id="incorrectAnswers">0</div>
-            <div class="stat-label">Incorrect</div>
-          </div>
-          <div class="stat pill">
-            <div class="stat-value" id="correctAverage">0%</div>
-            <div class="stat-label">Accuracy</div>
-          </div>
-        </div>
-
-        <div class="lists">
-          <div>
-            <h3>Correct Users</h3>
-            <p id="correctUsers" class="mono">—</p>
-          </div>
-          <div>
-            <h3>Incorrect Users</h3>
-            <p id="incorrectUsers" class="mono">—</p>
-          </div>
+          <div class="stat"><div class="stat-value" id="totalAnswers">0</div><div class="stat-label">Total</div></div>
+          <div class="stat ok"><div class="stat-value" id="correctAnswers">0</div><div class="stat-label">Correct</div></div>
+          <div class="stat warn"><div class="stat-value" id="incorrectAnswers">0</div><div class="stat-label">Incorrect</div></div>
+          <div class="stat pill"><div class="stat-value" id="correctAverage">0%</div><div class="stat-label">Accuracy</div></div>
         </div>
 
         <h3 style="margin-top:12px;">Leaderboard</h3>
         <table class="table" id="leaderboard">
-          <thead>
-            <tr><th>#</th><th>User</th><th>Score</th><th>Correct</th><th>Avg Time (s)</th></tr>
-          </thead>
+          <thead><tr><th>#</th><th>User</th><th>Score</th><th>Correct</th><th>Avg Time (s)</th></tr></thead>
           <tbody></tbody>
         </table>
 
-        <div class="progress">
-          <div id="timerBar" class="progress-bar" style="width:0%"></div>
-        </div>
+        <div class="progress"><div id="timerBar" class="progress-bar" style="width:0%"></div></div>
         <p id="timer" class="timer-text"></p>
       </section>
     </main>
