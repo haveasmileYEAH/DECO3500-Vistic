@@ -18,12 +18,27 @@
     </header>
 
     <main class="wrap">
-      <!-- 等待区 & 用户名 -->
-      <section id="greeting" class="card">
+      <!-- 加入房间 -->
+      <section id="joinCard" class="card">
         <h2 class="card-title">Join the quiz</h2>
+        <div class="form-grid">
+          <label class="label" for="username">Your Name</label>
+          <input class="input" type="text" id="username" placeholder="Enter your name" required>
+
+          <label class="label" for="roomInput">Room Code</label>
+          <input class="input" type="text" id="roomInput" placeholder="e.g. ABC123" maxlength="8" required>
+
+          <div class="btn-row">
+            <button id="joinBtn" class="btn btn-primary">Join</button>
+          </div>
+        </div>
+        <p class="muted small">Tip: If you opened this page via QR, the room code might be filled automatically.</p>
+      </section>
+
+      <!-- 等待区 -->
+      <section id="greeting" class="card hidden">
+        <h2 class="card-title">Ready</h2>
         <p id="questionPending" class="muted">Waiting for a question…</p>
-        <label class="label" for="username">Your Name</label>
-        <input class="input" type="text" id="username" placeholder="Enter your name">
       </section>
 
       <!-- 简答题 -->
@@ -68,8 +83,8 @@
         <p id="timer2" class="timer-text"></p>
       </section>
 
-      <!-- 判题反馈 -->
-      <section class="card">
+      <!-- 判题反馈（可选） -->
+      <section id="feedbackCard" class="card hidden">
         <div id="result" class="badge">—</div>
         <div id="answertext" class="muted"></div>
       </section>

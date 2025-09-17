@@ -18,6 +18,26 @@
     </header>
 
     <main class="wrap">
+      <!-- 房间 & 二维码 -->
+      <section class="card" id="roomCard">
+        <h2 class="card-title">Room & QR</h2>
+        <div class="room-grid">
+          <div>
+            <label class="label" for="roomCode">Room Code</label>
+            <div class="room-row">
+              <input class="input room-input" id="roomCode" maxlength="8" placeholder="e.g. ABC123">
+              <button id="genRoom" class="btn">Generate</button>
+              <button id="applyRoom" class="btn btn-primary">Apply</button>
+            </div>
+            <p class="muted">Students can join via code <b id="roomCodeText">—</b> or scan the QR.</p>
+            <p class="muted small">Join URL: <span id="joinUrl">—</span></p>
+          </div>
+          <div class="qr-box">
+            <canvas id="qrCanvas" width="160" height="160" aria-label="Room QR"></canvas>
+          </div>
+        </div>
+      </section>
+
       <!-- 题型选择 -->
       <section id="gameSelection" class="card">
         <h2 class="card-title">Select a question type</h2>
@@ -43,7 +63,7 @@
 
           <div class="btn-row">
             <input id="submit" class="btn btn-primary" type="submit" value="Send Question">
-            <button type="button" class="btn btn-ghost" onclick="history.back()">Cancel</button>
+            <button type="button" class="btn btn-ghost" id="cancelShort">Cancel</button>
           </div>
         </form>
       </section>
@@ -67,12 +87,25 @@
 
           <div class="btn-row">
             <input id="tfsubmit" class="btn btn-primary" type="submit" value="Send Question">
-            <button type="button" class="btn btn-ghost" onclick="history.back()">Cancel</button>
+            <button type="button" class="btn btn-ghost" id="cancelTF">Cancel</button>
           </div>
         </form>
       </section>
 
-      <!-- 统计面板 -->
+      <!-- 线下答题录入 -->
+      <section class="card" id="offlineCard">
+        <h2 class="card-title">Add Offline Answers</h2>
+        <div class="muted small">Record paper-based answers to update the leaderboard.</div>
+        <form id="offlineForm">
+          <div id="offlineRows"></div>
+          <div class="btn-row">
+            <button type="button" id="addRow" class="btn">+ Add Row</button>
+            <button type="submit" class="btn btn-primary">Submit Offline Results</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- 统计 + 排行榜 -->
       <section id="gameSummary" class="card hidden" aria-live="polite">
         <div class="summary-header">
           <h2 class="card-title">Live Summary</h2>
@@ -109,6 +142,14 @@
           </div>
         </div>
 
+        <h3 style="margin-top:12px;">Leaderboard</h3>
+        <table class="table" id="leaderboard">
+          <thead>
+            <tr><th>#</th><th>User</th><th>Score</th><th>Correct</th><th>Avg Time (s)</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+
         <div class="progress">
           <div id="timerBar" class="progress-bar" style="width:0%"></div>
         </div>
@@ -118,6 +159,7 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script src="/js/teacher.js"></script>
   </body>
 </html>

@@ -1,10 +1,8 @@
-@import url("/css/teacher.css"); /* 直接复用 teacher 的变量与通用样式 */
+@import url("/css/teacher.css"); /* 复用变量与基础组件 */
 
 .role{ background: rgba(14,165,233,.12); border-radius:999px; padding:4px 8px; }
-
 .qtext{ font-size:18px; margin:6px 0 2px; }
 .badge{
   display:inline-block; padding:6px 10px; border-radius:999px; border:1px solid var(--stroke);
   background:#fff; font-weight:700;
 }
-.muted{ color: var(--muted); }
