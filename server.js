@@ -1,5 +1,9 @@
 /**
- * Room + leaderboard + question bank + practice-rounds(10Q)
+ * Room + leaderboard + question bank(JSON) + practice rounds(10Q)
+ * Extras:
+ *  - Blank answers are ignored (no stats, no score)
+ *  - Permanent practice room code via PERM_ROOM env (default LEARN01)
+ *  - Teacher can inspect & delete questions (single/batch)
  */
 var express = require('express');
 var app = express();
@@ -9,6 +13,7 @@ var path = require('path');
 var fs = require('fs');
 
 const PORT = process.env.PORT || 3000;
+const PERMANENT_ROOM_CODE = (process.env.PERM_ROOM || 'LEARN01').trim().toUpperCase();
 
 // ---------- Static ----------
 app.use(express.static(path.join(__dirname, 'public')));
@@ -76,7 +81,7 @@ function computeLeaderboard(scoresMap) {
   return arr.map((x,i)=>({ rank:i+1, ...x }));
 }
 
-// 在线题目的得分：正确100 + 最多50速度分
+// 在线题：正确100 + 最多50速度分
 function scoreOnline(isCorrect, elapsedMs, timeLimitSec) {
   if (!isCorrect) return 0;
   const base = 100;
@@ -87,7 +92,7 @@ function scoreOnline(isCorrect, elapsedMs, timeLimitSec) {
   return base + bonus;
 }
 
-// 练习（题库）每轮10题：轮得分 = Math.round(正确率 * 100)
+// 练习（题库）每轮10题：轮得分 = round(正确率 * 100)
 function scorePractice(roundAcc) {
   return Math.round(roundAcc * 100);
 }
@@ -96,7 +101,7 @@ function scorePractice(roundAcc) {
 io.on('connection', (socket) => {
   let joined = new Set();
 
-  // --- 通用：加入房间 & 获取排行榜 & 题库统计 ---
+  // 基础：加入房间、排行榜、题库计数、永久房间信息
   socket.on('join', (room) => {
     if (!room) return;
     const r = room.trim().toUpperCase();
@@ -116,8 +121,11 @@ io.on('connection', (socket) => {
     io.to(socket.id).emit('questionBankUpdated', { count: questionBank.length });
   });
 
-  // --- 老师：新增题库题目（写入JSON）---
-  // data: {questionType:'short'|'truefalse', question:string, answer:string}
+  socket.on('getPermanentRoomInfo', () => {
+    io.to(socket.id).emit('permanentRoomInfo', { code: PERMANENT_ROOM_CODE });
+  });
+
+  // 老师：新增题库题
   socket.on('addOfflineQuestion', (data) => {
     if (!data || !data.questionType || !data.question) return;
     const q = {
@@ -128,12 +136,45 @@ io.on('connection', (socket) => {
     };
     questionBank.push(q);
     saveBank(questionBank);
-    // 通知所有人题库数量
     io.emit('questionBankUpdated', { count: questionBank.length });
     io.to(socket.id).emit('addOfflineQuestionOK', { ok: true, id: q.id });
   });
 
-  // --- 老师：在线出题（保留原功能） ---
+  // 老师：获取题库完整列表
+  socket.on('getQuestionBank', () => {
+    io.to(socket.id).emit('questionBankList', questionBank);
+  });
+
+  // 老师：删除单题
+  socket.on('deleteQuestion', ({ id }) => {
+    if (!id) return;
+    const before = questionBank.length;
+    questionBank = questionBank.filter(q => q.id !== id);
+    if (questionBank.length !== before) {
+      saveBank(questionBank);
+      io.emit('questionBankUpdated', { count: questionBank.length });
+    }
+    io.to(socket.id).emit('deleteQuestionOK', { ok:true, id });
+    // 刷新给请求者
+    io.to(socket.id).emit('questionBankList', questionBank);
+  });
+
+  // 老师：批量删除
+  socket.on('deleteQuestions', ({ ids }) => {
+    if (!Array.isArray(ids) || ids.length === 0) return;
+    const idset = new Set(ids);
+    const before = questionBank.length;
+    questionBank = questionBank.filter(q => !idset.has(q.id));
+    const removed = before - questionBank.length;
+    if (removed > 0) {
+      saveBank(questionBank);
+      io.emit('questionBankUpdated', { count: questionBank.length });
+    }
+    io.to(socket.id).emit('deleteQuestionsOK', { ok:true, removed });
+    io.to(socket.id).emit('questionBankList', questionBank);
+  });
+
+  // 老师：在线出题（广播）
   socket.on('submitquestion', (data) => {
     const { room, question, answer, timeLimit, questionType } = data || {};
     if (!room || !questionType) return;
@@ -151,7 +192,7 @@ io.on('connection', (socket) => {
     });
   });
 
-  // --- 学生：在线作答（保留原功能） ---
+  // 学生：在线作答（空回答忽略）
   socket.on('answerquestion', (data) => {
     const { room, answer, username } = data || {};
     if (!room) return;
@@ -159,10 +200,19 @@ io.on('connection', (socket) => {
     const state = getRoom(r);
     const user = (username || 'Anonymous').trim();
 
+    const ansClean = (answer == null) ? "" : String(answer).trim();
+    if (!ansClean) {
+      io.to(socket.id).emit('resultquestion', {
+        correct: false, blank: true, message: 'No answer submitted',
+        answer: state.currentQ ? state.currentQ.answer : '', username: user
+      });
+      return; // 不计入统计/得分
+    }
+
     const cq = state.currentQ;
     let isCorrect = false, elapsed = null;
     if (cq) {
-      isCorrect = String(answer) === String(cq.answer);
+      isCorrect = String(ansClean) === String(cq.answer);
       if (cq.startAt) elapsed = Date.now() - cq.startAt;
     }
 
@@ -201,8 +251,7 @@ io.on('connection', (socket) => {
     io.to(r).emit('leaderboard', computeLeaderboard(state.scores));
   });
 
-  // ---------- 练习模式（学生 ⇄ 题库） ----------
-  // 学生请求下一题（本轮不重复；每轮 10 题）
+  // ---------- 练习模式（题库） ----------
   socket.on('practiceNext', (data) => {
     const { room, username } = data || {};
     if (!room || !username) return;
@@ -210,7 +259,6 @@ io.on('connection', (socket) => {
     const user = username.trim();
     const state = getRoom(r);
 
-    // 初始化此学生本轮状态
     const st = state.practice.get(user) || { asked:new Set(), answered:0, correct:0 };
     state.practice.set(user, st);
 
@@ -222,14 +270,12 @@ io.on('connection', (socket) => {
       return;
     }
 
-    // 在题库中挑未出过的
     const remaining = questionBank.filter(q => !st.asked.has(q.id));
     if (remaining.length === 0) {
       io.to(socket.id).emit('practiceNoMore', { need: 10 - st.answered });
       return;
     }
     const q = remaining[Math.floor(Math.random() * remaining.length)];
-    // 标记已抽
     st.asked.add(q.id);
 
     io.to(socket.id).emit('practiceQuestion', {
@@ -237,7 +283,6 @@ io.on('connection', (socket) => {
     });
   });
 
-  // 学生提交练习题答案
   socket.on('practiceAnswer', (data) => {
     const { room, username, questionId, answer } = data || {};
     if (!room || !username || !questionId) return;
@@ -247,17 +292,22 @@ io.on('connection', (socket) => {
     const st = state.practice.get(user) || { asked:new Set(), answered:0, correct:0 };
     state.practice.set(user, st);
 
+    const ansClean = (answer == null) ? "" : String(answer).trim();
+    if (!ansClean) {
+      io.to(socket.id).emit('practiceFeedback', { ok:false, msg:'Please answer before submitting.' });
+      return; // 不计入
+    }
+
     const q = questionBank.find(x => x.id === questionId);
     if (!q) {
       io.to(socket.id).emit('practiceFeedback', { ok:false, msg:'Question not found' });
       return;
     }
 
-    const isCorrect = String(answer).trim() === String(q.answer).trim();
+    const isCorrect = String(ansClean) === String(q.answer).trim();
     st.answered += 1;
     if (isCorrect) st.correct += 1;
 
-    // 如果 10 题结束，结算分数并清空轮状态
     if (st.answered >= 10) {
       const acc = st.correct / st.answered;
       const pts = scorePractice(acc);
@@ -272,8 +322,7 @@ io.on('connection', (socket) => {
       });
       io.to(r).emit('leaderboard', computeLeaderboard(state.scores));
 
-      // 开新轮：清空已答/已抽
-      state.practice.set(user, { asked:new Set(), answered:0, correct:0 });
+      state.practice.set(user, { asked:new Set(), answered:0, correct:0 }); // 新轮
     } else {
       io.to(socket.id).emit('practiceFeedback', {
         ok:true, correct:isCorrect, correctAnswer:q.answer,
@@ -287,6 +336,7 @@ io.on('connection', (socket) => {
 
 const server = http.listen(PORT, () => {
   console.log('listening on *:' + PORT);
+  console.log('Permanent practice room code:', PERMANENT_ROOM_CODE);
 });
 server.on('error', (err) => {
   if (err.code === 'EADDRINUSE') {

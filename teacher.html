@@ -18,9 +18,25 @@
     </header>
 
     <main class="wrap">
-      <!-- 房间 & 二维码 -->
+      <!-- 永久练习房间码 -->
+      <section class="card" id="permCard">
+        <h2 class="card-title">Permanent Practice Room</h2>
+        <div class="room-grid">
+          <div>
+            <p class="muted">Students can always join practice with this code (no teacher required).</p>
+            <div class="room-row">
+              <div class="input room-input mono" id="permCode" style="display:flex;align-items:center;justify-content:center;"></div>
+              <button id="copyPerm" class="btn">Copy Code</button>
+            </div>
+            <p class="muted small">Join URL: <span id="permUrl">—</span></p>
+          </div>
+          <div class="qr-box"><canvas id="qrPermCanvas" width="160" height="160"></canvas></div>
+        </div>
+      </section>
+
+      <!-- 临时房间（在线出题用） -->
       <section class="card" id="roomCard">
-        <h2 class="card-title">Room & QR</h2>
+        <h2 class="card-title">Room & QR (Online Questions)</h2>
         <div class="room-grid">
           <div>
             <label class="label" for="roomCode">Room Code</label>
@@ -36,30 +52,52 @@
         </div>
       </section>
 
-      <!-- 题库管理（写入 JSON） -->
+      <!-- 题库管理（查看 / 删除 / 批删） -->
       <section class="card">
-        <h2 class="card-title">Question Bank <span class="muted small">(<span id="bankCount">0</span> items)</span></h2>
+        <h2 class="card-title">Question Bank Manager <span class="muted small">(<span id="bankCount">0</span> items)</span></h2>
+
+        <div class="toolbar">
+          <input id="bankSearch" class="input search" placeholder="Search in question / answer / id …">
+          <div class="btn-row">
+            <button id="refreshBank" class="btn">Refresh</button>
+            <button id="deleteSelected" class="btn warn">Delete Selected</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="table" id="bankTable">
+            <thead>
+              <tr>
+                <th style="width:36px"><input type="checkbox" id="selectAll"></th>
+                <th style="width:90px">Type</th>
+                <th>Question</th>
+                <th style="width:200px">Answer</th>
+                <th class="mono" style="width:200px">ID</th>
+                <th style="width:90px">Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <p id="bankMsg" class="muted small"></p>
+
+        <h3 style="margin-top:16px;">Add Question</h3>
         <form id="bankForm" class="form-grid">
           <label class="label">Type</label>
           <div class="radio-row">
             <label class="radio"><input type="radio" name="bkType" value="short" checked> Short</label>
             <label class="radio"><input type="radio" name="bkType" value="truefalse"> True/False</label>
           </div>
-
           <label class="label" for="bkQ">Question</label>
           <input id="bkQ" class="input" placeholder="Question text" required>
-
           <label class="label" for="bkA">Answer</label>
           <input id="bkA" class="input" placeholder='For TF use "true" or "false"' required>
-
-          <div class="btn-row">
-            <button class="btn btn-primary" type="submit">Add to Bank</button>
-          </div>
-          <p id="bankMsg" class="muted small"></p>
+          <div class="btn-row"><button class="btn btn-primary" type="submit">Add to Bank</button></div>
         </form>
       </section>
 
-      <!-- 在线出题（原来功能） -->
+      <!-- 在线出题 -->
       <section id="gameSelection" class="card">
         <h2 class="card-title">Select a question type (Online)</h2>
         <div class="btn-row">
@@ -68,7 +106,6 @@
         </div>
       </section>
 
-      <!-- 简答/判断（在线） -->
       <section id="short" class="card hidden" aria-hidden="true">
         <h2 class="card-title">Short Answer</h2>
         <form id="shortQuestion" class="form-grid" action="">
@@ -98,7 +135,7 @@
         </form>
       </section>
 
-      <!-- 统计 & 排行榜（在线） -->
+      <!-- 统计 & 排行榜 -->
       <section id="gameSummary" class="card hidden" aria-live="polite">
         <div class="summary-header">
           <h2 class="card-title">Live Summary</h2>

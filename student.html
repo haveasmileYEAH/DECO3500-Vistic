@@ -46,13 +46,20 @@
 
       <!-- 等待区（在线模式） -->
       <section id="greeting" class="card hidden">
-        <h2 class="card-title">Ready</h2>
+        <div class="summary-header">
+          <h2 class="card-title">Ready</h2>
+          <button id="exitOnline" class="btn">Exit</button>
+        </div>
         <p id="questionPending" class="muted">Waiting for a question…</p>
       </section>
 
       <!-- 练习题（题库） -->
       <section id="practiceCard" class="card hidden" aria-live="polite">
-        <h2 class="card-title">Practice Round</h2>
+        <div class="summary-header">
+          <h2 class="card-title">Practice Round</h2>
+          <button id="exitPractice" class="btn">Exit</button>
+        </div>
+
         <p class="muted small">This round has 10 questions. Questions won’t repeat within the round.</p>
 
         <div id="pShort" class="hidden">
@@ -85,9 +92,12 @@
         <div class="muted small" id="pProgress"></div>
       </section>
 
-      <!-- 在线题（与老师同步） -->
+      <!-- 在线题（老师同步） -->
       <section id="shortAnswer" class="card hidden" aria-live="polite">
-        <h2 class="card-title">Short Answer</h2>
+        <div class="summary-header">
+          <h2 class="card-title">Short Answer</h2>
+          <button id="exitOnline2" class="btn">Exit</button>
+        </div>
         <form id="shortanswers" class="form-grid">
           <div class="question"><span class="label">Question</span><p id="question" class="qtext">—</p></div>
           <label class="label" for="answer">Your Answer</label>
@@ -99,7 +109,10 @@
       </section>
 
       <section id="trueOrFalse" class="card hidden" aria-live="polite">
-        <h2 class="card-title">True / False</h2>
+        <div class="summary-header">
+          <h2 class="card-title">True / False</h2>
+          <button id="exitOnline3" class="btn">Exit</button>
+        </div>
         <form id="tfanswers" class="form-grid">
           <div class="question"><span class="label">Question</span><p id="tfquestion" class="qtext">—</p></div>
           <div class="radio-row">

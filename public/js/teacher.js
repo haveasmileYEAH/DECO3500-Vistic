@@ -1,20 +1,22 @@
-// Teacher: room + QR + add to bank + online quiz + leaderboard
+// Teacher: permanent practice room + room & QR + bank manager + online quiz + leaderboard
 var socket = io();
 var currentRoom = "";
 
+// ---------- helpers ----------
 function genCode(n=6){
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let s = ""; for (let i=0;i<n;i++) s += chars[Math.floor(Math.random()*chars.length)];
   return s;
 }
-function joinUrlFor(room){
+function joinUrlFor(room, opts={}){
   const base = window.location.origin + "/student";
   const u = new URL(base);
   u.searchParams.set("room", room);
+  if (opts.mode) u.searchParams.set("mode", opts.mode);
   return u.toString();
 }
-function drawQR(text){
-  const canvas = document.getElementById("qrCanvas");
+function drawQR(canvasId, text){
+  const canvas = document.getElementById(canvasId);
   if (!canvas || !window.QRCode) return;
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -22,7 +24,6 @@ function drawQR(text){
 }
 function show(id){ document.getElementById(id).classList.remove("hidden"); }
 function hide(id){ document.getElementById(id).classList.add("hidden"); }
-
 function startCountdown(seconds){
   let total = Number(seconds)||0, left = total;
   const bar = $("#timerBar"), text = $("#timer");
@@ -32,7 +33,6 @@ function startCountdown(seconds){
     bar.css("width", Math.floor(left/total*100)+"%"); text.text(left+" sec");
   },1000);
 }
-
 function renderLeaderboard(rows){
   const $tb = $("#leaderboard tbody"); $tb.empty();
   (rows||[]).forEach(r=>{
@@ -40,8 +40,53 @@ function renderLeaderboard(rows){
   });
 }
 
+// ---------- Question bank render ----------
+let BANK = [];
+function renderBankTable(){
+  const $tb = $("#bankTable tbody");
+  const kw = ($("#bankSearch").val()||"").toLowerCase();
+  $tb.empty();
+  BANK.filter(q=>{
+    if (!kw) return true;
+    return (q.question||"").toLowerCase().includes(kw)
+        || (q.answer||"").toLowerCase().includes(kw)
+        || (q.id||"").toLowerCase().includes(kw)
+        || (q.questionType||"").toLowerCase().includes(kw);
+  }).forEach(q=>{
+    const label = q.questionType === 'truefalse' ? 'True/False' : 'Short';
+    $tb.append(`
+      <tr data-id="${q.id}">
+        <td><input type="checkbox" class="rowSel"></td>
+        <td>${label}</td>
+        <td>${escapeHtml(q.question||"")}</td>
+        <td>${escapeHtml(q.answer||"")}</td>
+        <td class="mono">${q.id}</td>
+        <td><button class="btn btn-ghost delOne">Delete</button></td>
+      </tr>
+    `);
+  });
+}
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, (m)=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+}
+
 $(function(){
-  // 房间
+  // ---- Permanent room info ----
+  socket.emit("getPermanentRoomInfo");
+  socket.on("permanentRoomInfo", ({code})=>{
+    $("#permCode").text(code);
+    const url = joinUrlFor(code, {mode:"practice"});
+    $("#permUrl").text(url);
+    drawQR("qrPermCanvas", url);
+    $("#copyPerm").on("click", ()=>{
+      navigator.clipboard.writeText(code).then(()=> {
+        $("#bankMsg").text("Permanent code copied ✓");
+        setTimeout(()=>$("#bankMsg").text(""), 1200);
+      });
+    });
+  });
+
+  // ---- Online temp room (for live questions) ----
   const $room = $("#roomCode");
   $("#genRoom").on("click", ()=> $room.val(genCode()));
   $("#applyRoom").on("click", ()=>{
@@ -52,18 +97,50 @@ $(function(){
     $("#roomCodeText").text(currentRoom);
     const url = joinUrlFor(currentRoom);
     $("#joinUrl").text(url);
-    drawQR(url);
+    drawQR("qrCanvas", url);
     socket.emit("getLeaderboard", currentRoom);
   });
   $room.val(genCode());
 
-  // 题库：加载数量
+  // ---- Question bank manager ----
   socket.emit("getQuestionBankCount");
+  socket.emit("getQuestionBank");
+
   socket.on("questionBankUpdated", ({count})=>{
     $("#bankCount").text(count ?? 0);
   });
+  socket.on("questionBankList", (arr)=>{
+    BANK = Array.isArray(arr) ? arr : [];
+    renderBankTable();
+    $("#bankCount").text(BANK.length);
+  });
 
-  // 题库：新增
+  $("#refreshBank").on("click", ()=> socket.emit("getQuestionBank"));
+  $("#bankSearch").on("input", renderBankTable);
+
+  $("#bankTable").on("click", ".delOne", function(){
+    const id = $(this).closest("tr").data("id");
+    if (!id) return;
+    if (!confirm("Delete this question?")) return;
+    socket.emit("deleteQuestion", { id });
+  });
+
+  $("#selectAll").on("change", function(){
+    const on = $(this).is(":checked");
+    $("#bankTable .rowSel").prop("checked", on);
+  });
+
+  $("#deleteSelected").on("click", function(){
+    const ids = [];
+    $("#bankTable tbody tr").each(function(){
+      const on = $(this).find(".rowSel").is(":checked");
+      if (on) ids.push($(this).data("id"));
+    });
+    if (ids.length === 0) { alert("No rows selected."); return; }
+    if (!confirm(`Delete ${ids.length} selected question(s)?`)) return;
+    socket.emit("deleteQuestions", { ids });
+  });
+
   $("#bankForm").on("submit", (e)=>{
     e.preventDefault();
     const type = $('input[name="bkType"]:checked').val();
@@ -71,18 +148,19 @@ $(function(){
     if (!q || !a) return alert("Fill question & answer");
     socket.emit("addOfflineQuestion", { questionType:type, question:q, answer:a });
   });
-  socket.on("addOfflineQuestionOK", (res)=>{
+  socket.on("addOfflineQuestionOK", ()=>{
     $("#bankMsg").text("Added ✓");
-    setTimeout(()=>$("#bankMsg").text(""), 1500);
+    setTimeout(()=>$("#bankMsg").text(""), 1200);
     $("#bkQ").val(""); $("#bkA").val("");
+    socket.emit("getQuestionBank");
   });
 
-  // 在线模式 UI
+  // ---- Online quiz UI ----
   $("#shortAnswer").on("click", ()=>{ show("short"); hide("truefalse"); });
   $("#trueFalse").on("click", ()=>{ show("truefalse"); hide("short"); });
   $("#reset").on("click", ()=>{ show("gameSelection"); hide("short"); hide("truefalse"); });
 
-  // 在线：简答题
+  // Send short
   $("#shortQuestion").on("submit", ()=>{
     if(!currentRoom) return alert("Apply room first");
     hide("gameSelection"); hide("short"); show("gameSummary");
@@ -97,7 +175,7 @@ $(function(){
     return false;
   });
 
-  // 在线：判断题
+  // Send TF
   $("#trueFalseQuestion").on("submit", ()=>{
     if(!currentRoom) return alert("Apply room first");
     hide("gameSelection"); hide("truefalse"); show("gameSummary");
@@ -113,7 +191,7 @@ $(function(){
     return false;
   });
 
-  // 汇总 & 排行榜（在线）
+  // Live stats
   socket.on("deliverData", (d)=>{
     $("#totalAnswers").text(d.totalAnswers||0);
     $("#correctAnswers").text(d.correctAnswers||0);
