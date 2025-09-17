@@ -1,62 +1,123 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8"/>
-    <title>Classroom Collaboration (teacher)</title>
-    <link rel="stylesheet" href="public\css\teacher.css">
+    <title>Classroom Collaboration · Teacher</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link href="/css/teacher.css" rel="stylesheet">
   </head>
   <body>
-    <h1>Classroom Collaboration (teacher)</h1>
+    <div class="bg"></div>
 
-    <div id="gameSelection">
-      <h2>Pick a question type</h2> <br/>
-      <button id="shortAnswer" class="button">Short Answer</button>
-      <button id="trueFalse" class="button">True False</button><br /><br />
-    </div>
+    <header class="site-header">
+      <div class="brand">
+        <span class="logo">CC</span>
+        <span class="title">Classroom Collaboration</span>
+        <span class="role">Teacher</span>
+      </div>
+    </header>
 
-    <div id="short">
-      <h2>Short Answer Question</h2><br />
-      <form id="shortQuestion" action="">
-        <label for="question" style="font-size:30px;">Question:</label>
-        <input type="text" id="question"> <br />
-        <label for="answer" style="font-size:30px;">Answer:</label>
-        <input type="answer" id="answer"> <br />
-        <label for="timeLimit" style="font-size:30px;">Time Limit:</label>
-        <input type="range" step="5" min="10" max="90" id="timeLimit"> <br />
-        <input id="submit" type="submit">
-      </form>
-    </div>
+    <main class="wrap">
+      <!-- 题型选择 -->
+      <section id="gameSelection" class="card">
+        <h2 class="card-title">Select a question type</h2>
+        <div class="btn-row">
+          <button id="shortAnswer" class="btn btn-primary">Short Answer</button>
+          <button id="trueFalse" class="btn">True / False</button>
+        </div>
+      </section>
 
-    <div id="truefalse">
-      <h2>True Or False Question</h2><br />
-      <form id="trueFalseQuestion" action="">
-        <label for="tfquestion" style="font-size:30px;">Question:</label>
-        <input type="text" id="tfquestion"> <br />
-        <span style="font-size:30px;">Answer:</span>
-        <input type="radio" name="tfanswer" value="true" id="tf_true">
-        <label for="tf_true" style="font-size:30px;">True</label>
-        <input type="radio" name="tfanswer" value="false" id="tf_false">
-        <label for="tf_false" style="font-size:30px;">False</label> <br />
-        <label for="tftimeLimit" style="font-size:30px;">Time Limit:</label>
-        <input type="range" step="5" min="10" max="90" id="tftimeLimit"> <br />
-        <input id="tfsubmit" type="submit">
-      </form>
-    </div>
+      <!-- 简答题 -->
+      <section id="short" class="card hidden" aria-hidden="true">
+        <h2 class="card-title">Short Answer</h2>
+        <form id="shortQuestion" class="form-grid" action="">
+          <label class="label" for="question">Question</label>
+          <input class="input" type="text" id="question" placeholder="Type your question..." required>
 
-    <div id="gameSummary">
-      <p id="totalAnswers"></p>
-      <p id="correctAnswers"></p>
-      <p id="incorrectAnswers"></p>
-      <p id="correctUsers"></p>
-      <p id="correctAverage"></p>
-      <p id="incorrectUsers"></p>
-      <button id="reset">Submit Another Question</button>
-    </div>
+          <label class="label" for="answer">Correct Answer</label>
+          <input class="input" type="text" id="answer" placeholder="Type the correct answer..." required>
 
-    <p id="timer"></p>
+          <label class="label" for="timeLimit">Time Limit <span class="hint">(10–90s)</span></label>
+          <input class="range" type="range" step="5" min="10" max="90" id="timeLimit" value="30">
+          <div class="range-ticks"><span>10s</span><span>50s</span><span>90s</span></div>
+
+          <div class="btn-row">
+            <input id="submit" class="btn btn-primary" type="submit" value="Send Question">
+            <button type="button" class="btn btn-ghost" onclick="history.back()">Cancel</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- 判断题 -->
+      <section id="truefalse" class="card hidden" aria-hidden="true">
+        <h2 class="card-title">True / False</h2>
+        <form id="trueFalseQuestion" class="form-grid" action="">
+          <label class="label" for="tfquestion">Question</label>
+          <input class="input" type="text" id="tfquestion" placeholder="Type your statement..." required>
+
+          <span class="label">Correct Answer</span>
+          <div class="radio-row">
+            <label class="radio"><input type="radio" name="tfanswer" value="true"> True</label>
+            <label class="radio"><input type="radio" name="tfanswer" value="false"> False</label>
+          </div>
+
+          <label class="label" for="tftimeLimit">Time Limit <span class="hint">(10–90s)</span></label>
+          <input class="range" type="range" step="5" min="10" max="90" id="tftimeLimit" value="30">
+          <div class="range-ticks"><span>10s</span><span>50s</span><span>90s</span></div>
+
+          <div class="btn-row">
+            <input id="tfsubmit" class="btn btn-primary" type="submit" value="Send Question">
+            <button type="button" class="btn btn-ghost" onclick="history.back()">Cancel</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- 统计面板 -->
+      <section id="gameSummary" class="card hidden" aria-live="polite">
+        <div class="summary-header">
+          <h2 class="card-title">Live Summary</h2>
+          <button id="reset" class="btn">Submit Another Question</button>
+        </div>
+
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-value" id="totalAnswers">0</div>
+            <div class="stat-label">Total</div>
+          </div>
+          <div class="stat ok">
+            <div class="stat-value" id="correctAnswers">0</div>
+            <div class="stat-label">Correct</div>
+          </div>
+          <div class="stat warn">
+            <div class="stat-value" id="incorrectAnswers">0</div>
+            <div class="stat-label">Incorrect</div>
+          </div>
+          <div class="stat pill">
+            <div class="stat-value" id="correctAverage">0%</div>
+            <div class="stat-label">Accuracy</div>
+          </div>
+        </div>
+
+        <div class="lists">
+          <div>
+            <h3>Correct Users</h3>
+            <p id="correctUsers" class="mono">—</p>
+          </div>
+          <div>
+            <h3>Incorrect Users</h3>
+            <p id="incorrectUsers" class="mono">—</p>
+          </div>
+        </div>
+
+        <div class="progress">
+          <div id="timerBar" class="progress-bar" style="width:0%"></div>
+        </div>
+        <p id="timer" class="timer-text"></p>
+      </section>
+    </main>
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="/js/teacher.js"></script>
   </body>
 </html>

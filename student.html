@@ -1,46 +1,82 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8"/>
-    <title>Classroom Collaboration (student)</title>
-    <link rel="stylesheet" href="public/css/student.css">
+    <title>Classroom Collaboration · Student</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link href="/css/student.css" rel="stylesheet">
   </head>
   <body>
-    <h1>Classroom Collaboration (student)</h1>  
+    <div class="bg"></div>
 
-    <div id="greeting">
-      <p id="questionPending" style="font-size:30px;">Waiting for question....</p>
-      <label for="username" style="font-size:30px;">Enter Name:</label>
-      <input type="text" id="username">
-    </div>
+    <header class="site-header">
+      <div class="brand">
+        <span class="logo">CC</span>
+        <span class="title">Classroom Collaboration</span>
+        <span class="role">Student</span>
+      </div>
+    </header>
 
-    <div id="shortAnswer">
-      <form id="shortanswers" action="">
-        Question: <span id="question" style="font-size:20px;"></span> <br />
-        <label for="answer" style="font-size:30px;">Answer:</label>
-        <input type="text" id="answer"> <br />
-        <input id="submitShort" type="submit" value="Submit">
-      </form>
-    </div>
+    <main class="wrap">
+      <!-- 等待区 & 用户名 -->
+      <section id="greeting" class="card">
+        <h2 class="card-title">Join the quiz</h2>
+        <p id="questionPending" class="muted">Waiting for a question…</p>
+        <label class="label" for="username">Your Name</label>
+        <input class="input" type="text" id="username" placeholder="Enter your name">
+      </section>
 
-    <div id="trueOrFalse">
-      <form id="tfanswers" action="">
-        Question: <span id="tfquestion"></span> <br /><br />
-        <label style="margin-right:6px;">Answer:</label>
-        <input type="radio" name="tfanswer" value="true" id="s_tf_true">
-        <label for="s_tf_true">True</label>
-        <input type="radio" name="tfanswer" value="false" id="s_tf_false">
-        <label for="s_tf_false">False</label> <br />
-        <input id="submitTF" type="submit" value="Submit">
-      </form>
-    </div>
+      <!-- 简答题 -->
+      <section id="shortAnswer" class="card hidden" aria-live="polite">
+        <h2 class="card-title">Short Answer</h2>
+        <form id="shortanswers" class="form-grid" action="">
+          <div class="question">
+            <span class="label">Question</span>
+            <p id="question" class="qtext">—</p>
+          </div>
+          <label class="label" for="answer">Your Answer</label>
+          <input class="input" type="text" id="answer" placeholder="Type your answer…">
+          <div class="btn-row">
+            <input id="submitShort" class="btn btn-primary" type="submit" value="Submit">
+          </div>
+        </form>
+        <div class="progress">
+          <div id="sTimerBar1" class="progress-bar" style="width:0%"></div>
+        </div>
+        <p id="timer" class="timer-text"></p>
+      </section>
 
-    <div id="result"></div>
-    <div id="answertext"></div>  <br /><br />
-    <div id="timer"></div>
+      <!-- 判断题 -->
+      <section id="trueOrFalse" class="card hidden" aria-live="polite">
+        <h2 class="card-title">True / False</h2>
+        <form id="tfanswers" class="form-grid" action="">
+          <div class="question">
+            <span class="label">Question</span>
+            <p id="tfquestion" class="qtext">—</p>
+          </div>
+          <div class="radio-row">
+            <label class="radio"><input type="radio" name="tfanswer" value="true"> True</label>
+            <label class="radio"><input type="radio" name="tfanswer" value="false"> False</label>
+          </div>
+          <div class="btn-row">
+            <input id="submitTF" class="btn btn-primary" type="submit" value="Submit">
+          </div>
+        </form>
+        <div class="progress">
+          <div id="sTimerBar2" class="progress-bar" style="width:0%"></div>
+        </div>
+        <p id="timer2" class="timer-text"></p>
+      </section>
+
+      <!-- 判题反馈 -->
+      <section class="card">
+        <div id="result" class="badge">—</div>
+        <div id="answertext" class="muted"></div>
+      </section>
+    </main>
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="/js/student.js"></script>
   </body>
 </html>

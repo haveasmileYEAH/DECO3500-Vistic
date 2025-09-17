@@ -1,21 +1,10 @@
-body { text-align: center; }
-input[type=text], select {
-  width: 50%;
-  padding: 12px 20px;
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
+@import url("/css/teacher.css"); /* 直接复用 teacher 的变量与通用样式 */
+
+.role{ background: rgba(14,165,233,.12); border-radius:999px; padding:4px 8px; }
+
+.qtext{ font-size:18px; margin:6px 0 2px; }
+.badge{
+  display:inline-block; padding:6px 10px; border-radius:999px; border:1px solid var(--stroke);
+  background:#fff; font-weight:700;
 }
-input[type=submit] {
-  width: 50%;
-  background-color: #4CAF50;
-  color: white;
-  padding: 14px 20px;
-  margin: 8px 0;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-input[type=submit]:hover { background-color: #45a049; }
+.muted{ color: var(--muted); }
