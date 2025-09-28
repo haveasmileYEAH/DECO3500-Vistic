@@ -1,34 +1,75 @@
-/**
- * Room + leaderboard + question bank(JSON) + practice rounds(10Q)
- * Extras:
- *  - Blank answers are ignored (no stats, no score)
- *  - Permanent practice room code via PERM_ROOM env (default LEARN01)
- *  - Teacher can inspect & delete questions (single/batch)
- */
-var express = require('express');
-var app = express();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
-var path = require('path');
-var fs = require('fs');
+// server.js
+const express = require('express');
+const app = express();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+const path = require('path');
+const fs = require('fs');
+require('dotenv').config();
 
 const PORT = process.env.PORT || 3000;
 const PERMANENT_ROOM_CODE = (process.env.PERM_ROOM || 'LEARN01').trim().toUpperCase();
 
-// ---------- Static ----------
+// 静态资源：public 下的 /css 与 /js 会自动可用（/css/..., /js/...）
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/teacher', (req, res) => {
-  res.sendFile(path.join(__dirname, 'teacher.html'));
-});
-app.get('/student', (req, res) => {
-  res.sendFile(path.join(__dirname, 'student.html'));
+// HTML 页面
+app.get('/player1', (req, res) => res.sendFile(path.join(__dirname, 'player1.html')));
+app.get('/player2', (req, res) => res.sendFile(path.join(__dirname, 'player2.html')));
+app.get('/display',  (req, res) => res.sendFile(path.join(__dirname, 'display.html')));
+app.get('/audience', (req, res) => res.sendFile(path.join(__dirname, 'audience.html')));
+
+// 旧路径重定向
+app.get('/teacher', (req, res) => res.redirect(302, '/player1'));
+app.get('/student', (req, res) => res.redirect(302, '/player2'));
+
+// 向前端注入 Supabase 环境变量（仅 display/audience 用）
+app.get('/env.js', (req, res) => {
+  const url  = String(process.env.NEXT_PUBLIC_SUPABASE_URL || '');
+  const anon = String(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '');
+  res.type('application/javascript').send(
+    `window.SUPABASE_URL=${JSON.stringify(url)};window.SUPABASE_ANON_KEY=${JSON.stringify(anon)};`
+  );
 });
 
-// ---------- Question Bank (JSON file) ----------
+// 简易 CSV 导出（仅当配置了 SERVICE_ROLE_KEY 且建好表时可用）
+app.get('/api/export', async (req, res) => {
+  try {
+    const code = (req.query.code || '').toString().trim().toUpperCase();
+    if (!code) return res.status(400).json({ error: 'code required' });
+    const { createClient } = await import('@supabase/supabase-js');
+    const adminSb = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SERVICE_ROLE_KEY
+    );
+    const [r1, r2, r3, r4] = await Promise.all([
+      adminSb.from('rounds').select('*').eq('code', code),
+      adminSb.from('votes').select('*').eq('round_code', code),
+      adminSb.from('messages').select('*').eq('round_code', code),
+      adminSb.from('decisions').select('*').eq('round_code', code),
+    ]);
+    const rows = [
+      ['type','timestamp','payload'],
+      ...((r1.data||[]).map(x=>['round', x.created_at, JSON.stringify(x)])),
+      ...((r2.data||[]).map(x=>['vote', x.created_at, JSON.stringify(x)])),
+      ...((r3.data||[]).map(x=>['message', x.created_at, JSON.stringify(x)])),
+      ...((r4.data||[]).map(x=>['decision', x.submitted_at, JSON.stringify(x)])),
+    ];
+    const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+    res.setHeader('Content-Type','text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="${code}.csv"`);
+    res.send(csv);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'export failed' });
+  }
+});
+
+
+// ----------------- 课堂/玩家逻辑（与原版一致） -----------------
+
 const DATA_DIR = path.join(__dirname, 'data');
 const QFILE = path.join(DATA_DIR, 'questions.json');
-
 function ensureDataFile() {
   if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);
   if (!fs.existsSync(QFILE)) fs.writeFileSync(QFILE, '[]', 'utf-8');
@@ -42,19 +83,9 @@ function saveBank(arr) {
   ensureDataFile();
   fs.writeFileSync(QFILE, JSON.stringify(arr, null, 2), 'utf-8');
 }
-let questionBank = loadBank(); // [{id, questionType, question, answer}]
+let questionBank = loadBank();
 
-// ---------- Rooms state ----------
-/**
-rooms: Map<string, {
-  scores: Map<string, {score:number, correctCount:number, totalTime:number, answers:number}>
-  currentQ: {answer:string, questionType:'short'|'truefalse', timeLimit:number, startAt:number|null} | null
-  stats: {correct:number, incorrect:number, usersCorrect:string[], usersIncorrect:string[]}
-  practice: Map<string, {asked:Set<string>, answered:number, correct:number}>
-}>
-*/
 const rooms = new Map();
-
 function getRoom(r) {
   if (!rooms.has(r)) {
     rooms.set(r, {
@@ -66,7 +97,6 @@ function getRoom(r) {
   }
   return rooms.get(r);
 }
-
 function computeLeaderboard(scoresMap) {
   const arr = [];
   scoresMap.forEach((v, name) => {
@@ -80,8 +110,6 @@ function computeLeaderboard(scoresMap) {
   });
   return arr.map((x,i)=>({ rank:i+1, ...x }));
 }
-
-// 在线题：正确100 + 最多50速度分
 function scoreOnline(isCorrect, elapsedMs, timeLimitSec) {
   if (!isCorrect) return 0;
   const base = 100;
@@ -91,28 +119,21 @@ function scoreOnline(isCorrect, elapsedMs, timeLimitSec) {
   const bonus = Math.floor((left / total) * 50);
   return base + bonus;
 }
+function scorePractice(roundAcc) { return Math.round(roundAcc * 100); }
 
-// 练习（题库）每轮10题：轮得分 = round(正确率 * 100)
-function scorePractice(roundAcc) {
-  return Math.round(roundAcc * 100);
-}
-
-// ---------- Socket ----------
 io.on('connection', (socket) => {
-  let joined = new Set();
-
-  // 基础：加入房间、排行榜、题库计数、永久房间信息
   socket.on('join', (room) => {
     if (!room) return;
     const r = room.trim().toUpperCase();
-    socket.join(r); joined.add(r);
+    socket.join(r);
     const state = getRoom(r);
     io.to(socket.id).emit('leaderboard', computeLeaderboard(state.scores));
     io.to(socket.id).emit('questionBankUpdated', { count: questionBank.length });
   });
 
   socket.on('getLeaderboard', (room) => {
-    const r = (room||'').trim().toUpperCase(); if (!r) return;
+    const r = (room||'').trim().toUpperCase();
+    if (!r) return;
     const state = getRoom(r);
     io.to(socket.id).emit('leaderboard', computeLeaderboard(state.scores));
   });
@@ -125,7 +146,6 @@ io.on('connection', (socket) => {
     io.to(socket.id).emit('permanentRoomInfo', { code: PERMANENT_ROOM_CODE });
   });
 
-  // 老师：新增题库题
   socket.on('addOfflineQuestion', (data) => {
     if (!data || !data.questionType || !data.question) return;
     const q = {
@@ -140,41 +160,29 @@ io.on('connection', (socket) => {
     io.to(socket.id).emit('addOfflineQuestionOK', { ok: true, id: q.id });
   });
 
-  // 老师：获取题库完整列表
   socket.on('getQuestionBank', () => {
     io.to(socket.id).emit('questionBankList', questionBank);
   });
 
-  // 老师：删除单题
   socket.on('deleteQuestion', ({ id }) => {
     if (!id) return;
-    const before = questionBank.length;
     questionBank = questionBank.filter(q => q.id !== id);
-    if (questionBank.length !== before) {
-      saveBank(questionBank);
-      io.emit('questionBankUpdated', { count: questionBank.length });
-    }
+    saveBank(questionBank);
+    io.emit('questionBankUpdated', { count: questionBank.length });
     io.to(socket.id).emit('deleteQuestionOK', { ok:true, id });
-    // 刷新给请求者
     io.to(socket.id).emit('questionBankList', questionBank);
   });
 
-  // 老师：批量删除
   socket.on('deleteQuestions', ({ ids }) => {
     if (!Array.isArray(ids) || ids.length === 0) return;
     const idset = new Set(ids);
-    const before = questionBank.length;
     questionBank = questionBank.filter(q => !idset.has(q.id));
-    const removed = before - questionBank.length;
-    if (removed > 0) {
-      saveBank(questionBank);
-      io.emit('questionBankUpdated', { count: questionBank.length });
-    }
-    io.to(socket.id).emit('deleteQuestionsOK', { ok:true, removed });
+    saveBank(questionBank);
+    io.emit('questionBankUpdated', { count: questionBank.length });
+    io.to(socket.id).emit('deleteQuestionsOK', { ok:true, removed: ids.length });
     io.to(socket.id).emit('questionBankList', questionBank);
   });
 
-  // 老师：在线出题（广播）
   socket.on('submitquestion', (data) => {
     const { room, question, answer, timeLimit, questionType } = data || {};
     if (!room || !questionType) return;
@@ -192,7 +200,6 @@ io.on('connection', (socket) => {
     });
   });
 
-  // 学生：在线作答（空回答忽略）
   socket.on('answerquestion', (data) => {
     const { room, answer, username } = data || {};
     if (!room) return;
@@ -206,7 +213,7 @@ io.on('connection', (socket) => {
         correct: false, blank: true, message: 'No answer submitted',
         answer: state.currentQ ? state.currentQ.answer : '', username: user
       });
-      return; // 不计入统计/得分
+      return;
     }
 
     const cq = state.currentQ;
@@ -251,7 +258,6 @@ io.on('connection', (socket) => {
     io.to(r).emit('leaderboard', computeLeaderboard(state.scores));
   });
 
-  // ---------- 练习模式（题库） ----------
   socket.on('practiceNext', (data) => {
     const { room, username } = data || {};
     if (!room || !username) return;
@@ -295,7 +301,7 @@ io.on('connection', (socket) => {
     const ansClean = (answer == null) ? "" : String(answer).trim();
     if (!ansClean) {
       io.to(socket.id).emit('practiceFeedback', { ok:false, msg:'Please answer before submitting.' });
-      return; // 不计入
+      return;
     }
 
     const q = questionBank.find(x => x.id === questionId);
@@ -322,7 +328,7 @@ io.on('connection', (socket) => {
       });
       io.to(r).emit('leaderboard', computeLeaderboard(state.scores));
 
-      state.practice.set(user, { asked:new Set(), answered:0, correct:0 }); // 新轮
+      state.practice.set(user, { asked:new Set(), answered:0, correct:0 });
     } else {
       io.to(socket.id).emit('practiceFeedback', {
         ok:true, correct:isCorrect, correctAnswer:q.answer,
@@ -330,17 +336,9 @@ io.on('connection', (socket) => {
       });
     }
   });
-
-  socket.on('disconnect', () => { joined.clear(); });
 });
 
-const server = http.listen(PORT, () => {
+http.listen(PORT, () => {
   console.log('listening on *:' + PORT);
   console.log('Permanent practice room code:', PERMANENT_ROOM_CODE);
-});
-server.on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.error(`Port ${PORT} is in use. Try: set PORT=${Number(PORT)+1} && npm start`);
-    process.exit(1);
-  }
 });

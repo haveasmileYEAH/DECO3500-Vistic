@@ -1,4 +1,4 @@
-// Student: join -> choose mode -> practice (10Q) OR online
+// Player 2（原 student.js）：join -> choose mode -> practice(10Q) OR online
 var socket = io();
 var username = "", room = "";
 var currentPracticeQ = null;
@@ -91,7 +91,7 @@ $(function(){
     }
   });
   socket.on("practiceNoMore", ({need})=>{
-    $("#pFeedback").text("No more questions in bank. Ask teacher to add questions.");
+    $("#pFeedback").text("No more questions in bank. Ask Player 1 to add questions.");
   });
   socket.on("practiceFeedback", (res)=>{
     if (!res.ok) return $("#pFeedback").text(res.msg || "Error");

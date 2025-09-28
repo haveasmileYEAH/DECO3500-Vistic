@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Street Challenge – Audience Vote</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link href="/css/audience.css" rel="stylesheet">
+</head>
+<body>
+  <h1>Street Challenge – Audience</h1>
+
+  <div class="card">
+    <div class="row">
+      <label class="small">Round Code</label>
+      <input id="codeInput" placeholder="ABC123" style="flex:0 0 120px">
+      <button id="apply">Join</button>
+      <span id="joined" class="small"></span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div id="title" class="title">Enter code & join to see the story…</div>
+    <div id="body" class="body"></div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <button id="up">👍 Believe True</button>
+      <button id="down">👎 Believe False</button>
+      <span id="stat" class="small">👍 0 | 👎 0 (0% up)</span>
+    </div>
+    <div class="bar" style="margin-top:8px"><div id="barUp" class="up" style="width:0%"></div></div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <input id="hint" placeholder="Optional reason / comment…" style="flex:1">
+      <button id="send">Send</button>
+    </div>
+    <ul id="messages" class="list"></ul>
+  </div>
+
+  <script src="/env.js"></script>
+  <script type="module" src="/js/audience.js?v=2"></script>
+</body>
+</html>

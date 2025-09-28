@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Street Challenge · Player 1</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <!-- 样式 -->
+  <link href="/css/player1.css" rel="stylesheet">
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <span class="logo">CC</span>
+      <span class="title">Street Challenge</span>
+      <span class="role">Player 1</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <!-- 永久练习房间（可选，不影响 Supabase） -->
+    <section class="card">
+      <h2 class="card-title">Permanent Practice Room</h2>
+      <div class="room-grid">
+        <div>
+          <p class="muted">This room is always open for practice.</p>
+          <div class="room-row">
+            <div id="permCode" class="input room-input mono" style="height:40px;display:flex;align-items:center;justify-content:center;"></div>
+            <button id="copyPerm" class="btn">Copy Code</button>
+          </div>
+          <p class="small muted">Join URL: <span id="permUrl">—</span></p>
+          <div id="bankMsg" class="small muted"></div>
+        </div>
+        <div class="qr-box"><canvas id="qrPermCanvas" width="160" height="160"></canvas></div>
+      </div>
+    </section>
+
+    <!-- 街头挑战：房间码 + 二维码 + （可选）标题/正文 -->
+    <section class="card">
+      <h2 class="card-title">Room & QR (Street Challenge)</h2>
+      <div class="room-grid">
+        <div>
+          <label class="label">Room Code</label>
+          <div class="room-row">
+            <input id="roomCode" class="input room-input" maxlength="8" placeholder="e.g. ABC123"/>
+            <button id="genRoom" class="btn">Generate</button>
+            <button id="applyRoom" class="btn btn-primary">Apply</button>
+          </div>
+          <p class="muted">Share this code or scan the QR.</p>
+          <p class="small muted">Join URL (Audience): <a id="joinUrl" href="#" target="_blank">—</a></p>
+          <p class="small">Current code: <b id="roomCodeText">—</b></p>
+
+          <!-- 可选：现场就写入展示给观众/大屏的标题与正文 -->
+          <label class="label" style="margin-top:8px">Round Title (optional)</label>
+          <input id="roundTitle" class="input" placeholder="e.g. Cafeteria rumor about ...">
+
+          <label class="label">Round Body (optional)</label>
+          <textarea id="roundBody" class="textarea" rows="4" placeholder="Write the story text shown to audience/display"></textarea>
+        </div>
+        <div class="qr-box"><canvas id="qrCanvas" width="160" height="160"></canvas></div>
+      </div>
+    </section>
+
+    <!-- 题库管理（本地 JSON） -->
+    <section class="card">
+      <h2 class="card-title">Question Bank <span class="small muted">(<span id="bankCount">0</span> items)</span></h2>
+
+      <div class="toolbar">
+        <input id="bankSearch" class="input search" placeholder="Search question/answer/id/type…"/>
+        <div class="btn-row">
+          <button id="refreshBank" class="btn">Refresh</button>
+          <button id="deleteSelected" class="btn warn">Delete Selected</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table id="bankTable" class="table">
+          <thead>
+            <tr>
+              <th><input id="selectAll" type="checkbox"/></th>
+              <th>Type</th>
+              <th>Question</th>
+              <th>Answer</th>
+              <th>ID</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <form id="bankForm" class="form-grid" style="margin-top:12px">
+        <label class="label">Add new</label>
+        <div class="radio-row">
+          <label class="radio"><input type="radio" name="bkType" value="short" checked/> Short Answer</label>
+          <label class="radio"><input type="radio" name="bkType" value="truefalse"/> True / False</label>
+        </div>
+        <input id="bkQ" class="input" placeholder="Question"/>
+        <input id="bkA" class="input" placeholder="Answer (exact or true/false)"/>
+        <div class="btn-row"><button class="btn btn-primary" type="submit">Add</button></div>
+      </form>
+    </section>
+
+    <!-- 在线出题 -->
+    <section class="card" id="gameSelection">
+      <h2 class="card-title">Online Questions</h2>
+      <div class="btn-row">
+        <button id="shortAnswer" class="btn">Short Answer</button>
+        <button id="trueFalse" class="btn">True / False</button>
+      </div>
+    </section>
+
+    <section id="short" class="card hidden">
+      <h2 class="card-title">Short Answer</h2>
+      <form id="shortQuestion" class="form-grid">
+        <input id="question" class="input" placeholder="Question text"/>
+        <input id="answer" class="input" placeholder="Correct answer (exact)"/>
+        <label class="label">Time Limit (sec)</label>
+        <input id="timeLimit" type="number" min="0" value="30" className="input sm"/>
+        <div class="btn-row">
+          <button class="btn btn-primary" type="submit">Start</button>
+          <button id="reset" class="btn" type="button">Back</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="truefalse" class="card hidden">
+      <h2 class="card-title">True / False</h2>
+      <form id="trueFalseQuestion" class="form-grid">
+        <input id="tfquestion" class="input" placeholder="Statement (True/False)"/>
+        <div class="radio-row">
+          <label class="radio"><input type="radio" name="tfanswer" value="true"/> True</label>
+          <label class="radio"><input type="radio" name="tfanswer" value="false" checked/> False</label>
+        </div>
+        <label class="label">Time Limit (sec)</label>
+        <input id="tftimeLimit" type="number" min="0" value="30" className="input sm"/>
+        <div class="btn-row">
+          <button class="btn btn-primary" type="submit">Start</button>
+          <button id="reset2" class="btn" type="button"
+                  onclick="document.getElementById('gameSelection').classList.remove('hidden');document.getElementById('truefalse').classList.add('hidden');">
+            Back
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- 进行中摘要 -->
+    <section id="gameSummary" class="card hidden">
+      <h2 class="card-title">Live Summary & Leaderboard</h2>
+      <div class="stats">
+        <div class="stat"><div id="totalAnswers"   class="stat-value">0</div><div class="stat-label">Total Answers</div></div>
+        <div class="stat"><div id="correctAnswers" class="stat-value">0</div><div class="stat-label">Believed True</div></div>
+        <div class="stat"><div id="incorrectAnswers" class="stat-value">0</div><div class="stat-label">Believed False</div></div>
+        <div class="stat"><div id="correctAverage" class="stat-value">0%</div><div class="stat-label">True Share</div></div>
+      </div>
+      <div class="progress"><div id="timerBar" class="progress-bar"></div></div>
+      <div class="timer-text">Time left: <span id="timer" class="mono"></span></div>
+
+      <div class="lists" style="margin-top:12px">
+        <div><h3 class="list-title">True</h3><div id="correctUsers" class="input" style="min-height:48px"></div></div>
+        <div><h3 class="list-title">False</h3><div id="incorrectUsers" class="input" style="min-height:48px"></div></div>
+      </div>
+
+      <div class="table-wrap" style="margin-top:12px">
+        <table id="leaderboard" class="table">
+          <thead><tr><th>#</th><th>Name</th><th>Score</th><th>Correct</th><th>Avg(s)</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 脚本加载顺序：Socket.IO → jQuery → QRCode → 你自己的逻辑 -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <script src="/js/player1.js"></script>
+
+  <!-- 注入 Supabase 环境（/env.js 由 server.js 提供，读取 .env） -->
+  <script src="/env.js"></script>
+
+  <!-- 点 “Apply” 时自动在 Supabase 创建/更新 round（避免 Round not found） -->
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+    const url  = window.SUPABASE_URL
+    const anon = window.SUPABASE_ANON_KEY
+
+    if (!url || !anon) {
+      console.warn('Supabase env missing; skip auto-create round.')
+    } else {
+      const sb = createClient(url, anon)
+
+      const applyBtn   = document.getElementById('applyRoom')
+      const roomInput  = document.getElementById('roomCode')
+      const titleInput = document.getElementById('roundTitle') // 可为空
+      const bodyInput  = document.getElementById('roundBody')  // 可为空
+
+      applyBtn?.addEventListener('click', async () => {
+        const code = (roomInput?.value || '').trim().toUpperCase()
+        if (!code) return
+        const title = (titleInput?.value || 'Street Challenge Round').trim()
+        const body  = (bodyInput?.value  || 'Host will present the story...').trim()
+
+        try {
+          const { error } = await sb.from('rounds').upsert(
+            { code, title, body, status: 'live', truth: null },
+            { onConflict: 'code' } // 已存在则更新，否则插入
+          )
+          if (error) {
+            console.error('Upsert round failed:', error.message)
+            alert('Create round failed: ' + error.message)
+          } else {
+            console.log('Round ready:', code)
+          }
+        } catch (e) {
+          console.error(e)
+        }
+      })
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+# node
+node_modules/
+npm-debug.log*
+yarn.lock
+pnpm-lock.yaml
+
+# env & local configs
+.env
+.env.*
+!.env.example        # 允许示例文件进仓库
+
+# build artifacts
+dist/
+build/
+.next/
+coverage/
+
+# OS/editor junk
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# app data (可选：如果你有本地题库文件等)
+data/

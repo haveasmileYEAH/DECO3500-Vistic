@@ -1,4 +1,6 @@
-// Teacher: permanent practice room + room & QR + bank manager + online quiz + leaderboard
+// Player 1: permanent practice room + room & QR + bank manager + online quiz + leaderboard
+// 基于你的 teacher.js 迁移，保留原有功能，仅把“临时房间”的二维码/链接指向 /audience?code=XXXXXX
+
 var socket = io();
 var currentRoom = "";
 
@@ -8,13 +10,23 @@ function genCode(n=6){
   let s = ""; for (let i=0;i<n;i++) s += chars[Math.floor(Math.random()*chars.length)];
   return s;
 }
-function joinUrlFor(room, opts={}){
-  const base = window.location.origin + "/student";
+
+// 原有：生成学生端 join 链接（保留用于“永久练习”）
+function joinUrlForPlayer(room, opts={}){
+  const base = window.location.origin + "/player2";
   const u = new URL(base);
   u.searchParams.set("room", room);
   if (opts.mode) u.searchParams.set("mode", opts.mode);
   return u.toString();
 }
+
+// 新增：观众投票页链接（街头挑战首选二维码目标）
+function audienceUrlFor(room){
+  const u = new URL(window.location.origin + "/audience");
+  u.searchParams.set("code", room);
+  return u.toString();
+}
+
 function drawQR(canvasId, text){
   const canvas = document.getElementById(canvasId);
   if (!canvas || !window.QRCode) return;
@@ -75,18 +87,18 @@ $(function(){
   socket.emit("getPermanentRoomInfo");
   socket.on("permanentRoomInfo", ({code})=>{
     $("#permCode").text(code);
-    const url = joinUrlFor(code, {mode:"practice"});
+    const url = joinUrlForPlayer(code, {mode:"practice"}); // 练习模式仍走玩家页
     $("#permUrl").text(url);
     drawQR("qrPermCanvas", url);
     $("#copyPerm").on("click", ()=>{
-      navigator.clipboard.writeText(code).then(()=> {
+      navigator.clipboard.writeText(code).then(()=>{
         $("#bankMsg").text("Permanent code copied ✓");
         setTimeout(()=>$("#bankMsg").text(""), 1200);
       });
     });
   });
 
-  // ---- Online temp room (for live questions) ----
+  // ---- Online temp room (for live questions / street challenge) ----
   const $room = $("#roomCode");
   $("#genRoom").on("click", ()=> $room.val(genCode()));
   $("#applyRoom").on("click", ()=>{
@@ -95,9 +107,12 @@ $(function(){
     currentRoom = r;
     socket.emit("join", currentRoom);
     $("#roomCodeText").text(currentRoom);
-    const url = joinUrlFor(currentRoom);
-    $("#joinUrl").text(url);
-    drawQR("qrCanvas", url);
+
+    // 关键改动：观众二维码 → /audience?code=XXXX
+    const urlAud = audienceUrlFor(currentRoom);
+    $("#joinUrl").text(urlAud);
+    drawQR("qrCanvas", urlAud);
+
     socket.emit("getLeaderboard", currentRoom);
   });
   $room.val(genCode());

@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Street Challenge · Player 2</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link href="/css/player2.css" rel="stylesheet">
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <span class="logo">CC</span>
+      <span class="title">Street Challenge</span>
+      <span class="role">Player 2</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- 加入 -->
+    <section id="joinCard" class="card">
+      <h2 class="card-title">Join</h2>
+      <div class="form-grid">
+        <label class="label">Your Name</label>
+        <input id="username" class="input" placeholder="Enter your name"/>
+        <label class="label">Room Code</label>
+        <input id="roomInput" class="input" placeholder="ABC123" maxlength="8"/>
+        <div class="btn-row"><button id="joinBtn" class="btn btn-primary">Join</button></div>
+      </div>
+      <p class="small muted">If opened via QR from Player 1, the room may be pre-filled.</p>
+    </section>
+
+    <!-- 模式选择 -->
+    <section id="modeCard" class="card hidden">
+      <h2 class="card-title">Choose Mode</h2>
+      <div class="btn-row">
+        <button id="modePractice" class="btn">Practice (10 questions)</button>
+        <button id="modeOnline" class="btn">Live (host-controlled)</button>
+      </div>
+    </section>
+
+    <!-- 在线欢迎 -->
+    <section id="greeting" class="card hidden">
+      <h2 class="card-title">Waiting for the host…</h2>
+      <div class="btn-row"><button id="exitOnline" class="btn">Back</button></div>
+    </section>
+
+    <!-- 在线：短答 -->
+    <section id="shortAnswer" class="card hidden">
+      <h2 class="card-title">Live · Short Answer</h2>
+      <div class="qtext" id="question">—</div>
+      <form id="shortanswers" class="form-grid">
+        <input id="answer" class="input" placeholder="Type your answer…"/>
+        <div class="progress"><div id="sTimerBar1" class="progress-bar"></div></div>
+        <div class="timer-text">Time left: <span id="timer" class="mono"></span></div>
+        <div class="btn-row"><button type="submit" class="btn btn-primary">Submit</button><button id="exitOnline2" type="button" class="btn">Back</button></div>
+      </form>
+    </section>
+
+    <!-- 在线：判断 -->
+    <section id="trueOrFalse" class="card hidden">
+      <h2 class="card-title">Live · True / False</h2>
+      <div class="qtext" id="tfquestion">—</div>
+      <form id="tfanswers" class="form-grid">
+        <div class="radio-row">
+          <label class="radio"><input type="radio" name="tfanswer" value="true"/> True</label>
+          <label class="radio"><input type="radio" name="tfanswer" value="false"/> False</label>
+        </div>
+        <div class="progress"><div id="sTimerBar2" class="progress-bar"></div></div>
+        <div class="timer-text">Time left: <span id="timer2" class="mono"></span></div>
+        <div class="btn-row"><button type="submit" class="btn btn-primary">Submit</button><button id="exitOnline3" type="button" class="btn">Back</button></div>
+      </form>
+    </section>
+
+    <!-- 在线反馈 -->
+    <section id="feedbackCard" class="card hidden">
+      <h2 class="card-title">Result</h2>
+      <div id="result" class="badge">—</div>
+      <p id="answertext" class="muted">—</p>
+    </section>
+
+    <!-- 练习 -->
+    <section id="practiceCard" class="card hidden">
+      <h2 class="card-title">Practice (10 questions)</h2>
+      <!-- 短答 -->
+      <div id="pShort" class="hidden">
+        <div class="label">Question</div>
+        <div id="pShortQ" class="input mono" style="min-height:48px">—</div>
+        <form id="pShortForm" class="form-grid" style="margin-top:8px">
+          <label class="label">Your Answer</label>
+          <input id="pShortA" class="input" placeholder="Type your answer…"/>
+          <div class="btn-row">
+            <button class="btn btn-primary" type="submit">Submit</button>
+            <button id="pNext1" class="btn" type="button">Next</button>
+            <button id="exitPractice" class="btn" type="button">Back</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- 判断 -->
+      <div id="pTF" class="hidden">
+        <div class="label">Question</div>
+        <div id="pTFQ" class="input mono" style="min-height:48px">—</div>
+        <form id="pTFForm" class="form-grid" style="margin-top:8px">
+          <div class="radio-row">
+            <label class="radio"><input type="radio" name="pTFans" value="true"/> True</label>
+            <label class="radio"><input type="radio" name="pTFans" value="false"/> False</label>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" type="submit">Submit</button>
+            <button id="pNext2" class="btn" type="button">Next</button>
+            <button id="exitPractice" class="btn" type="button">Back</button>
+          </div>
+        </form>
+      </div>
+
+      <div id="pFeedback" class="small muted" style="margin-top:8px"></div>
+      <div id="pProgress" class="small muted"></div>
+    </section>
+
+  </main>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+  <script src="/js/player2.js"></script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Street Challenge – Display</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link href="/css/display.css" rel="stylesheet">
+</head>
+<body>
+  <div class="wrap">
+    <div class="row between" style="margin-bottom:16px">
+      <div class="row" style="gap:8px"><span>Round Code</span><span id="codeEl" class="code">———</span></div>
+      <div class="row" style="gap:8px">
+        <label class="small">Change Code:</label>
+        <input id="codeInput" class="input" placeholder="ABC123">
+        <button id="apply" class="btn">Apply</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div id="title" class="title">Loading title…</div>
+      <div id="body" class="body">Loading body…</div>
+    </div>
+
+    <div class="grid" style="margin-top:16px">
+      <div class="card">
+        <div class="row between"><span class="chip">Live Votes</span><div id="stat" class="stat">👍 0 | 👎 0 (0% up)</div></div>
+        <div class="bar" style="margin-top:10px"><div id="barUp" class="up" style="width:0%"></div></div>
+        <div id="revealBox" style="margin-top:10px; display:none"><span class="chip">Revealed</span> <span id="truth" class="truth">Truth: —</span></div>
+      </div>
+
+      <div class="card">
+        <div class="row between"><span class="chip">Live Hints</span><div class="small">Newest last • auto-scroll</div></div>
+        <ul id="messages" class="list"></ul>
+      </div>
+    </div>
+
+    <div class="footer" style="margin-top:12px">
+      Example: <span id="example"></span>
+    </div>
+  </div>
+
+  <script src="/env.js"></script>
+  <script type="module" src="/js/display.js"></script>
+</body>
+</html>
