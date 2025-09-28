@@ -104,19 +104,21 @@ applyBtn.onclick = joinRound
 upBtn.onclick = async ()=>{
   if (!code) return alert('Join first')
   const { error } = await supabase.from('votes').insert({ round_code: code, value: 'up' })
-  if (error) alert(error.message); else await refreshVotes()  // 兜底刷新
+  console.log('[audience] vote up ->', { code, error })
+  if (error) alert(error.message); else await refreshVotes()
 }
 downBtn.onclick = async ()=>{
   if (!code) return alert('Join first')
   const { error } = await supabase.from('votes').insert({ round_code: code, value: 'down' })
-  if (error) alert(error.message); else await refreshVotes()  // 兜底刷新
+  console.log('[audience] vote down ->', { code, error })
+  if (error) alert(error.message); else await refreshVotes()
 }
-
 sendBtn.onclick = async ()=>{
   if (!code) return alert('Join first')
   const content = (hint.value || '').trim()
   if (!content) return
   const { error } = await supabase.from('messages').insert({ round_code: code, content, tag: 'unknown' })
+  console.log('[audience] message ->', { code, error })
   if (!error) { hint.value=''; } else alert(error.message)
 }
 
