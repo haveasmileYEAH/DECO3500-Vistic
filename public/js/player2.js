@@ -1,15 +1,24 @@
-// Player 2（原 student.js）：join -> choose mode -> practice(10Q) OR online
-var socket = io();
-var username = "", room = "";
-var currentPracticeQ = null;
-var onlineTimer1 = null, onlineTimer2 = null;
+// public/js/player2.js
+// Player 2: Two-step UI (Lobby -> Stage), receive questions, answer, feedback
+// Robust socket init (lazy) + optional Supabase votes (dynamic import)
 
+let socket = null;        // lazy-inited
+let username = "", room = "";
+let onlineTimer1 = null, onlineTimer2 = null;
+
+/* ============== helpers ============== */
 function parseQuery(name){
   try { return new URL(window.location.href).searchParams.get(name) || ""; }
   catch { return ""; }
 }
-function show(id){ document.getElementById(id).classList.remove("hidden"); }
-function hide(id){ document.getElementById(id).classList.add("hidden"); }
+function show(id){ 
+  const el = document.getElementById(id);
+  if (el) el.classList.remove("hidden");
+}
+function hide(id){ 
+  const el = document.getElementById(id);
+  if (el) el.classList.add("hidden");
+}
 function clearOnlineTimers(){
   if (onlineTimer1) { clearInterval(onlineTimer1); onlineTimer1 = null; }
   if (onlineTimer2) { clearInterval(onlineTimer2); onlineTimer2 = null; }
@@ -24,124 +33,92 @@ function startTimer(barId, textId, seconds){
   },1000);
   return t;
 }
-function requestNextPractice(){
-  $("#pFeedback").text("");
-  $("#pProgress").text("");
-  $("#pShortA").val("");
-  $('input[name="pTFans"]').prop('checked', false);
-  socket.emit("practiceNext", { room, username });
+
+/* ============== Socket (lazy) ============== */
+function ensureSocket() {
+  if (socket && socket.connected) return true;
+  if (typeof io !== "function") {
+    alert("Socket.io client is not available. Check that /socket.io/socket.io.js loads correctly.");
+    console.error("[P2] window.io is not defined. Verify the script tag and the server.");
+    return false;
+  }
+  try {
+    socket = io(); // connect to same origin
+    // basic diagnostics
+    socket.on("connect", ()=> console.log("[P2] socket connected:", socket.id));
+    socket.on("connect_error", (err)=> console.error("[P2] connect_error:", err?.message || err));
+    socket.on("disconnect", (r)=> console.warn("[P2] socket disconnected:", r));
+    // re-register listeners after (re)connect if needed (we add once below too)
+    attachSocketListeners();
+    return true;
+  } catch (e) {
+    console.error("[P2] io() failed:", e);
+    alert("Failed to initialize socket connection.");
+    return false;
+  }
 }
 
-$(function(){
-  // 预填房间 & 模式
-  const autoRoom = (parseQuery("room")||"").toUpperCase();
-  const autoMode = (parseQuery("mode")||"").toLowerCase();
+/* ============== Supabase votes (optional) ============== */
+let sb = null;
+let voteChannel = null;
 
-  if (autoRoom) $("#roomInput").val(autoRoom);
+const statEl = document.getElementById('voteStat2');
+const barEl  = document.getElementById('voteBarUp2');
 
-  // 加入房间
-  $("#joinBtn").on("click", ()=>{
-    username = ($("#username").val()||"Anonymous").trim();
-    room = ($("#roomInput").val()||"").trim().toUpperCase();
-    if (!room) return alert("Enter room code");
-    socket.emit("join", room);
-
-    hide("joinCard"); show("modeCard");
-
-    // 如果 URL 指定了 mode=practice，则自动进入练习
-    if (autoMode === "practice") {
-      hide("modeCard"); show("practiceCard");
-      requestNextPractice();
+async function initSupabase(){
+  try {
+    const mod = await import('https://esm.sh/@supabase/supabase-js@2');
+    const createClient = mod?.createClient;
+    if (createClient && window.SUPABASE_URL && window.SUPABASE_ANON_KEY){
+      sb = createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
     }
-  });
+  } catch (e) {
+    // votes disabled silently if CDN blocked
+  }
+}
+async function refreshVotes(){
+  if (!sb || !room) return;
+  try{
+    const { data, error } = await sb.rpc('get_vote_counts', { p_round_code: room });
+    if (error) { console.error('[P2] get_vote_counts', error.message); return; }
+    const up = data?.up || 0, down = data?.down || 0, total = up + down;
+    const pct = total ? Math.round(up / total * 100) : 0;
+    if (statEl) statEl.textContent = `👍 ${up} | 👎 ${down} (${pct}% up)`;
+    if (barEl)  barEl.style.width = pct + '%';
+  } catch(e){
+    console.error('[P2] refreshVotes error', e);
+  }
+}
+function subscribeVotes(){
+  if (!sb) return;
+  if (voteChannel) { sb.removeChannel(voteChannel); voteChannel = null; }
+  if (!room) return;
+  voteChannel = sb.channel('p2:'+room)
+    .on('postgres_changes', { event:'INSERT', schema:'public', table:'votes', filter:`round_code=eq.${room}` }, refreshVotes)
+    .subscribe();
+  refreshVotes();
+}
 
-  // 模式选择
-  $("#modePractice").on("click", ()=>{
-    hide("modeCard"); show("practiceCard");
-    requestNextPractice();
-  });
-  $("#modeOnline").on("click", ()=>{
-    hide("modeCard"); show("greeting");
-  });
+/* ============== Socket listeners (idempotent) ============== */
+let listenersAttached = false;
+function attachSocketListeners(){
+  if (!socket || listenersAttached) return;
+  listenersAttached = true;
 
-  // 退出练习 -> 回到模式选择
-  $("#exitPractice").on("click", function(){
-    $("#pFeedback").text("");
-    $("#pProgress").text("");
-    currentPracticeQ = null;
-    hide("practiceCard");
-    show("modeCard");
-  });
-
-  // 退出在线 -> 回到模式选择
-  $("#exitOnline, #exitOnline2, #exitOnline3").on("click", function(){
-    clearOnlineTimers();
-    hide("shortAnswer"); hide("trueOrFalse"); hide("greeting");
-    hide("feedbackCard");
-    show("modeCard");
-  });
-
-  // 练习：收到题目
-  socket.on("practiceQuestion", (q)=>{
-    currentPracticeQ = q; $("#pFeedback").text(""); $("#pProgress").text("");
-    if (q.questionType === 'short'){
-      $("#pShortQ").text(q.question); show("pShort"); hide("pTF");
-    } else {
-      $("#pTFQ").text(q.question); show("pTF"); hide("pShort");
-    }
-  });
-  socket.on("practiceNoMore", ({need})=>{
-    $("#pFeedback").text("No more questions in bank. Ask Player 1 to add questions.");
-  });
-  socket.on("practiceFeedback", (res)=>{
-    if (!res.ok) return $("#pFeedback").text(res.msg || "Error");
-    $("#pFeedback").text(res.correct ? "Correct ✓" : "Incorrect ✗ (Answer: "+res.correctAnswer+")");
-    $("#pProgress").text(`Progress: ${res.progress.answered}/10 | Correct: ${res.progress.correct}`);
-  });
-  socket.on("practiceRoundDone", (res)=>{
-    $("#pFeedback").html(`Round finished! Correct ${res.correct}/${res.answered} · Accuracy ${(res.accuracy*100).toFixed(0)}% · +${res.pointsAdded} pts added to leaderboard.`);
-    $("#pProgress").text("");
-    currentPracticeQ = null;
-  });
-  socket.on("practiceDone", (res)=>{
-    $("#pFeedback").html(`You already finished 10 this round. Accuracy ${(res.accuracy*100).toFixed(0)}%. Click Next to start a new round.`);
-  });
-
-  // 练习：提交答案（空则阻止）
-  $("#pShortForm").on("submit", function(e){
-    e.preventDefault();
-    if (!currentPracticeQ) return;
-    const ans = ($("#pShortA").val() || "").trim();
-    if (!ans) { $("#pFeedback").text("Please enter an answer."); return; }
-    socket.emit("practiceAnswer", { room, username, questionId: currentPracticeQ.id, answer: ans });
-  });
-  $("#pTFForm").on("submit", function(e){
-    e.preventDefault();
-    if (!currentPracticeQ) return;
-    const ans = $('input[name="pTFans"]:checked').val();
-    if (ans == null) { $("#pFeedback").text("Please choose True or False."); return; }
-    socket.emit("practiceAnswer", { room, username, questionId: currentPracticeQ.id, answer: ans });
-  });
-  $("#pNext1, #pNext2").on("click", ()=> requestNextPractice());
-
-  // 在线：短答题（空则阻止）
-  $("#shortanswers").on("submit", function(){
-    const ans = ($("#answer").val() || "").trim();
-    if (!ans) { alert("Please enter an answer before submitting."); return false; }
-    socket.emit("answerquestion", { room, answer: ans, username });
-    return false;
-  });
-  // 在线：判断题（未选阻止）
-  $("#tfanswers").on("submit", function(){
-    const ans = $('input[name="tfanswer"]:checked').val();
-    if (ans == null) { alert("Please choose True or False."); return false; }
-    socket.emit("answerquestion", { room, answer: ans, username });
-    return false;
-  });
-
-  // 在线：收到题目
+  // Receive question
   socket.on("deliverquestion", (msg)=>{
     hide("greeting");
+    hide("completionCard"); // 隐藏完成卡片
+
+    const n = (msg.qNumber ?? null), t = (msg.qTotal ?? null);
+    const qText = (n && t) ? `Q ${n} / ${t}` : "Q — / —";
+    
+    const qNo2aEl = document.getElementById('qNo2a');
+    if (qNo2aEl) qNo2aEl.textContent = qText;
+    
+    const qNo2bEl = document.getElementById('qNo2b');
+    if (qNo2bEl) qNo2bEl.textContent = qText;
+
     if (msg.questionType === "short"){
       $("#question").html(msg.question); show("shortAnswer"); hide("trueOrFalse");
       clearOnlineTimers(); onlineTimer1 = startTimer("sTimerBar1","timer", msg.timeLimit);
@@ -152,17 +129,101 @@ $(function(){
     hide("feedbackCard"); $("#result").text("—"); $("#answertext").text("");
   });
 
-  // 在线：判题结果（区分空回答）
+  // Feedback
   socket.on("resultquestion", (msg)=>{
     show("feedbackCard");
-    if (msg.blank) {
-      $("#result").text("No answer submitted");
-    } else {
-      $("#result").text(msg.correct ? "Correct!" : "Incorrect!");
-    }
+    if (msg.blank) $("#result").text("No answer submitted");
+    else $("#result").text(msg.correct ? "Correct!" : "Incorrect!");
     $("#answertext").text("Correct answer: " + (msg.answer||""));
   });
 
-  // 学生端不渲染排行榜（如需可扩展）
-  socket.on("leaderboard", (rows)=>{ /* noop */ });
+  // ⭐ 新增：监听测验完成事件
+  socket.on("quizCompleted", (data)=>{
+    console.log("[P2] Quiz completed!", data);
+    clearOnlineTimers();
+    hide("shortAnswer");
+    hide("trueOrFalse");
+    hide("feedbackCard");
+    hide("greeting");
+    show("completionCard");
+    
+    // 更新完成信息
+    const msgEl = document.getElementById('completionMsg');
+    if (msgEl && data.categoryName) {
+      msgEl.textContent = `Congratulations! You have completed all ${data.totalQuestions || ''} questions in the "${data.categoryName}" category!`;
+    }
+    
+    // 更新排行榜
+    if (data.leaderboard && Array.isArray(data.leaderboard)) {
+      renderCompletionLeaderboard(data.leaderboard);
+    }
+  });
+
+  // Optional: ignore leaderboard on student side
+  socket.on("leaderboard", ()=>{ /* no-op */ });
+}
+
+/* ============== Render completion leaderboard ============== */
+function renderCompletionLeaderboard(rows){
+  const $tb = $("#completionLeaderboard tbody");
+  $tb.empty();
+  (rows||[]).forEach(r=>{
+    $tb.append(`<tr><td>${r.rank}</td><td>${r.username}</td><td>${r.score}</td><td>${r.correctCount}</td><td>${r.avgTime}</td></tr>`);
+  });
+}
+
+/* ============== DOM ready ============== */
+$(async function(){
+  await initSupabase();
+
+  // Prefill from QR (?room= / ?code=)
+  const autoRoom = (parseQuery("room")||parseQuery("code")||"").toUpperCase();
+  if (autoRoom) $("#roomInput").val(autoRoom);
+
+  // Join -> switch UI: Lobby -> Stage
+  $("#joinBtn").on("click", ()=>{
+    username = ($("#username").val()||"Anonymous").trim();
+    room = ($("#roomInput").val()||"").trim().toUpperCase();
+    if (!room) return alert("Enter room code");
+
+    if (!ensureSocket()) return; // don't proceed without socket
+
+    // Join room via socket
+    socket.emit("join", room);
+    console.log("[P2] emitted join:", room);
+
+    // UI
+    hide("lobby");
+    show("stage");
+    show("greeting");
+    show("voteCard");
+
+    // Votes (safe if sb == null)
+    subscribeVotes();
+  });
+
+  // Exit -> back to Lobby
+  $("#exitOnline, #exitOnline2, #exitOnline3").on("click", function(){
+    clearOnlineTimers();
+    hide("shortAnswer"); hide("trueOrFalse"); hide("greeting");
+    hide("feedbackCard"); hide("voteCard"); hide("completionCard");
+    show("lobby");
+    if (voteChannel && sb) { sb.removeChannel(voteChannel); voteChannel = null; }
+  });
+
+  // Submit answers
+  $("#shortanswers").on("submit", function(){
+    const ans = ($("#answer").val() || "").trim();
+    if (!ans) { alert("Please enter an answer before submitting."); return false; }
+    if (!ensureSocket()) return false;
+    socket.emit("answerquestion", { room, answer: ans, username });
+    return false;
+  });
+  $("#tfanswers").on("submit", function(){
+    const ans = $('input[name="tfanswer"]:checked').val();
+    if (ans == null) { alert("Please choose True or False."); return false; }
+    if (!ensureSocket()) return false;
+    socket.emit("answerquestion", { room, answer: ans, username });
+    return false;
+  });
 });

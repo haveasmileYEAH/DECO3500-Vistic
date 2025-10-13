@@ -23,6 +23,16 @@
     <div id="body" class="body"></div>
   </div>
 
+  <!-- 新增：当前问题卡片 -->
+  <div class="card" id="questionCard" style="display:none">
+    <div class="question-header">
+      <span class="badge">Current Question</span>
+      <span id="qNumber" class="small">Q — / —</span>
+    </div>
+    <div id="currentQuestion" class="question-text">Waiting for question...</div>
+    <div id="questionType" class="small muted" style="margin-top:8px"></div>
+  </div>
+
   <div class="card">
     <div class="row">
       <button id="up">👍 Believe True</button>
@@ -41,6 +51,6 @@
   </div>
 
   <script src="/env.js"></script>
-  <script type="module" src="/js/audience.js?v=2"></script>
+  <script type="module" src="/js/audience.js?v=3"></script>
 </body>
 </html>

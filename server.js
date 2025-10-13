@@ -10,7 +10,7 @@ require('dotenv').config();
 const PORT = process.env.PORT || 3000;
 const PERMANENT_ROOM_CODE = (process.env.PERM_ROOM || 'LEARN01').trim().toUpperCase();
 
-// 静态资源：public 下的 /css 与 /js 会自动可用（/css/..., /js/...）
+// 静态资源：public 下的 /css 与 /js 会自动启用（/css/..., /js/...）
 app.use(express.static(path.join(__dirname, 'public')));
 
 // HTML 页面
@@ -66,7 +66,7 @@ app.get('/api/export', async (req, res) => {
 });
 
 
-// ----------------- 课堂/玩家逻辑（与原版一致） -----------------
+// ----------------- 课堂/玩家逻辑 -----------------
 
 const DATA_DIR = path.join(__dirname, 'data');
 const QFILE = path.join(DATA_DIR, 'questions.json');
@@ -92,7 +92,8 @@ function getRoom(r) {
       scores: new Map(),
       currentQ: null,
       stats: { correct: 0, incorrect: 0, usersCorrect: [], usersIncorrect: [] },
-      practice: new Map()
+      practice: new Map(),
+      answeredUsers: new Set() // 追踪已答题用户
     });
   }
   return rooms.get(r);
@@ -184,7 +185,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('submitquestion', (data) => {
-    const { room, question, answer, timeLimit, questionType } = data || {};
+    const { room, question, answer, timeLimit, questionType, qNumber, qTotal } = data || {};
     if (!room || !questionType) return;
     const r = room.trim().toUpperCase();
     const state = getRoom(r);
@@ -192,11 +193,19 @@ io.on('connection', (socket) => {
       answer: String(answer ?? ''),
       questionType,
       timeLimit: Number(timeLimit) || 0,
-      startAt: Date.now()
+      startAt: Date.now(),
+      qNumber: qNumber || null,
+      qTotal: qTotal || null
     };
     state.stats = { correct: 0, incorrect: 0, usersCorrect: [], usersIncorrect: [] };
+    state.answeredUsers = new Set(); // 重置已答题用户
+    
     io.to(r).emit('deliverquestion', {
-      question, questionType, timeLimit: Number(timeLimit) || 0
+      question, 
+      questionType, 
+      timeLimit: Number(timeLimit) || 0,
+      qNumber: qNumber || null,
+      qTotal: qTotal || null
     });
   });
 
@@ -216,6 +225,18 @@ io.on('connection', (socket) => {
       return;
     }
 
+    // 检查是否已经答过题
+    if (state.answeredUsers.has(user)) {
+      io.to(socket.id).emit('resultquestion', {
+        correct: false, 
+        blank: false, 
+        message: 'You have already answered this question',
+        answer: state.currentQ ? state.currentQ.answer : '', 
+        username: user
+      });
+      return;
+    }
+
     const cq = state.currentQ;
     let isCorrect = false, elapsed = null;
     if (cq) {
@@ -230,6 +251,9 @@ io.on('connection', (socket) => {
     if (isCorrect) rec.correctCount += 1;
     if (elapsed != null) rec.totalTime += Math.max(0, Math.floor(elapsed/1000));
     state.scores.set(user, rec);
+
+    // 标记该用户已答题
+    state.answeredUsers.add(user);
 
     if (isCorrect) {
       state.stats.correct += 1;
@@ -256,6 +280,27 @@ io.on('connection', (socket) => {
     });
 
     io.to(r).emit('leaderboard', computeLeaderboard(state.scores));
+
+    // 通知房间内的 Player1 有玩家提交了答案（用于自动跳转）
+    io.to(r).emit('playerAnswered', {
+      username: user,
+      totalAnswered: state.answeredUsers.size
+    });
+  });
+
+  // 新增：测验完成事件
+  socket.on('quizComplete', (data) => {
+    const { room, categoryName, totalQuestions } = data || {};
+    if (!room) return;
+    const r = room.trim().toUpperCase();
+    const state = getRoom(r);
+    
+    // 广播测验完成事件给房间内所有人
+    io.to(r).emit('quizCompleted', {
+      categoryName: categoryName || 'Unknown',
+      totalQuestions: totalQuestions || 0,
+      leaderboard: computeLeaderboard(state.scores)
+    });
   });
 
   socket.on('practiceNext', (data) => {

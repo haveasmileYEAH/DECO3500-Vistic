@@ -41,6 +41,7 @@ alter publication supabase_realtime add table public.votes;
 alter publication supabase_realtime add table public.messages;
 
 
+
 In Settings → API, click Reload/Reset schema cache (updates API cache)
 
 4) Run the app
