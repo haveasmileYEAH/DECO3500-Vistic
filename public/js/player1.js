@@ -13,18 +13,41 @@ function genCode(n=6){
   let s = ""; for (let i=0;i<n;i++) s += chars[Math.floor(Math.random()*chars.length)];
   return s;
 }
+
+// ⭐ 修复：生成 Audience URL（不是 player2）
 function audienceUrlFor(room){
-  const u = new URL(window.location.origin + "/player2");
-  u.searchParams.set("room", room);
+  const u = new URL(window.location.origin + "/audience");
+  u.searchParams.set("code", room);
   return u.toString();
 }
+
+// ⭐ 使用 Google Charts API 生成二维码（无需外部库）
 function drawQR(canvasId, text){
-  const canvas = document.getElementById(canvasId);
-  if (!canvas || !window.QRCode) return;
-  const ctx = canvas.getContext("2d");
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  QRCode.toCanvas(canvas, text, {width:160, margin:1}, (err)=>{ if(err) console.error(err); });
+  const img = document.getElementById(canvasId);
+  if (!img) {
+    console.error('[P1] QR element not found:', canvasId);
+    return;
+  }
+  
+  console.log('[P1] Generating QR Code for:', text);
+  
+  // 使用 QR Server API（更可靠）
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(text)}`;
+  
+  img.onload = () => {
+    console.log('[P1] ✅ QR Code loaded successfully');
+  };
+  
+  img.onerror = () => {
+    console.error('[P1] Failed to load QR Code');
+    img.alt = 'QR Code Failed';
+    img.style.border = '2px solid #f87171';
+    img.style.background = '#fee2e2';
+  };
+  
+  img.src = qrUrl;
 }
+
 function show(id){ 
   const el = document.getElementById(id);
   if (el) el.classList.remove("hidden");
@@ -447,6 +470,8 @@ $(function(){
     $("#roomCodeText").text(currentRoom);
     const urlAud = audienceUrlFor(currentRoom);
     $("#joinUrl").text(urlAud).attr("href", urlAud);
+    
+    // ⭐ 生成二维码
     drawQR("qrCanvas", urlAud);
 
     socket.emit("getLeaderboard", currentRoom);

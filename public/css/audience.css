@@ -1,103 +1,196 @@
-body{
-  font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-  max-width:720px;
-  margin:0 auto;
-  padding:16px;
-  background:#f8fafc;
-  color:#0f172a
+/* ==================== 基础样式 ==================== */
+body {
+  font-family: system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 16px;
+  background: #f8fafc;
+  color: #0f172a;
 }
 
-.muted{color:#64748b}
-
-.card{
-  border:1px solid #e5e7eb;
-  border-radius:14px;
-  padding:12px;
-  background:#fff;
-  margin-bottom:12px
+/* 电脑版：居中显示，最大宽度 */
+@media (min-width: 769px) {
+  body {
+    max-width: 720px;
+    margin: 0 auto;
+  }
 }
 
-.row{
-  display:flex;
-  gap:8px;
-  align-items:center
+/* 手机版：全宽显示 */
+@media (max-width: 768px) {
+  body {
+    padding: 12px;
+  }
+  
+  h1 {
+    font-size: 20px;
+    margin: 0 0 16px 0;
+  }
 }
 
-input,select,button{
-  padding:10px 12px;
-  border:1px solid #cbd5e1;
-  border-radius:12px;
-  background:#fff
+.muted {
+  color: #64748b;
 }
 
-button{cursor:pointer}
-
-.title{
-  font-size:20px;
-  font-weight:700
+/* ==================== 卡片样式 ==================== */
+.card {
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 12px;
+  background: #fff;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.body{
-  white-space:pre-wrap;
-  color:#334155
+/* 手机版：减少内边距 */
+@media (max-width: 768px) {
+  .card {
+    padding: 10px;
+    border-radius: 12px;
+  }
 }
 
-.bar{
-  height:10px;
-  background:#e5e7eb;
-  border-radius:999px;
-  overflow:hidden
+/* ==================== 行布局 ==================== */
+.row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
-.up{
-  height:100%;
-  background:#10b981;
-  transition:width .2s
+/* 手机版：垂直排列按钮 */
+@media (max-width: 768px) {
+  .row button {
+    flex: 1;
+    min-width: 0;
+  }
 }
 
-.pill{
-  font-size:12px;
-  padding:2px 6px;
-  border-radius:8px
+/* ==================== 表单元素 ==================== */
+input, select, button {
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: #fff;
+  font-size: 14px;
 }
 
-.real{
-  background:#dcfce7;
-  color:#166534
+/* 手机版：更大的触摸目标 */
+@media (max-width: 768px) {
+  input, select, button {
+    padding: 12px 14px;
+    font-size: 16px; /* 防止 iOS 自动缩放 */
+  }
+  
+  button {
+    min-height: 44px; /* iOS 推荐的最小触摸目标 */
+  }
 }
 
-.mis{
-  background:#ffe4e6;
-  color:#9f1239
+button {
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
 }
 
-.list{
-  list-style:none;
-  padding:0;
-  margin:0;
-  max-height:220px;
-  overflow:auto
+button:active {
+  transform: scale(0.98);
 }
 
-.li{
-  padding:6px 0;
-  border-bottom:1px solid #f1f5f9;
-  font-size:14px;
-  display:flex;
-  gap:8px
+/* ==================== 标题样式 ==================== */
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
 }
 
-.small{
-  font-size:12px;
-  color:#94a3b8
+/* 手机版：更小的标题 */
+@media (max-width: 768px) {
+  .title {
+    font-size: 18px;
+  }
 }
 
-/* 新增：问题显示样式 */
+.body {
+  white-space: pre-wrap;
+  color: #334155;
+  line-height: 1.6;
+}
+
+/* ==================== 进度条 ==================== */
+.bar {
+  height: 10px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+/* 手机版：更粗的进度条 */
+@media (max-width: 768px) {
+  .bar {
+    height: 12px;
+  }
+}
+
+.up {
+  height: 100%;
+  background: #10b981;
+  transition: width 0.3s ease;
+}
+
+/* ==================== 标签样式 ==================== */
+.pill {
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 8px;
+}
+
+.real {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.mis {
+  background: #ffe4e6;
+  color: #9f1239;
+}
+
+/* ==================== 列表样式 ==================== */
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 220px;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch; /* iOS 平滑滚动 */
+}
+
+/* 手机版：更高的列表 */
+@media (max-width: 768px) {
+  .list {
+    max-height: 180px;
+  }
+}
+
+.li {
+  padding: 6px 0;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 14px;
+  display: flex;
+  gap: 8px;
+}
+
+.small {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* ==================== 问题显示样式 ==================== */
 .question-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .badge {
@@ -109,6 +202,15 @@ button{cursor:pointer}
   border: 1px solid #e0e7ff;
   font-size: 12px;
   font-weight: 600;
+  white-space: nowrap;
+}
+
+/* 手机版：更大的徽章 */
+@media (max-width: 768px) {
+  .badge {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
 }
 
 .question-text {
@@ -122,6 +224,145 @@ button{cursor:pointer}
   line-height: 1.6;
 }
 
-.muted {
-  color: #64748b;
+/* 手机版：更大的问题文字 */
+@media (max-width: 768px) {
+  .question-text {
+    font-size: 16px;
+    padding: 14px;
+    line-height: 1.5;
+  }
+}
+
+/* ==================== 投票按钮样式 ==================== */
+#up, #down {
+  flex: 1;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+#up {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+}
+
+#up:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+#down {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  border: none;
+}
+
+#down:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+}
+
+/* 手机版：全宽按钮 */
+@media (max-width: 768px) {
+  #up, #down {
+    font-size: 16px;
+    padding: 14px;
+  }
+}
+
+/* ==================== 输入框优化 ==================== */
+#codeInput {
+  text-transform: uppercase;
+  font-family: monospace;
+  font-weight: bold;
+  text-align: center;
+  letter-spacing: 2px;
+}
+
+/* 手机版：更宽的输入框 */
+@media (max-width: 768px) {
+  #codeInput {
+    flex: 1 1 auto;
+    min-width: 100px;
+  }
+}
+
+#hint {
+  flex: 1;
+}
+
+/* ==================== 统计信息 ==================== */
+#stat {
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+/* 手机版：统计信息换行 */
+@media (max-width: 768px) {
+  #stat {
+    flex-basis: 100%;
+    text-align: center;
+    margin-top: 4px;
+  }
+}
+
+/* ==================== 深色模式支持（可选） ==================== */
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #0f172a;
+    color: #f1f5f9;
+  }
+  
+  .card {
+    background: #1e293b;
+    border-color: #334155;
+  }
+  
+  input, select, button {
+    background: #1e293b;
+    border-color: #334155;
+    color: #f1f5f9;
+  }
+  
+  .question-text {
+    background: #0f172a;
+    border-color: #334155;
+    color: #f1f5f9;
+  }
+  
+  .bar {
+    background: #334155;
+  }
+}
+
+/* ==================== 横屏手机优化 ==================== */
+@media (max-width: 768px) and (orientation: landscape) {
+  body {
+    padding: 8px;
+  }
+  
+  .card {
+    margin-bottom: 8px;
+  }
+  
+  .list {
+    max-height: 120px;
+  }
+}
+
+/* ==================== 平板设备优化 ==================== */
+@media (min-width: 769px) and (max-width: 1024px) {
+  body {
+    max-width: 600px;
+  }
+}
+
+/* ==================== 大屏幕优化 ==================== */
+@media (min-width: 1025px) {
+  body {
+    max-width: 800px;
+  }
+  
+  .question-text {
+    font-size: 20px;
+    padding: 16px;
+  }
 }
