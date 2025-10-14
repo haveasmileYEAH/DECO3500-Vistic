@@ -20,6 +20,3 @@ coverage/
 Thumbs.db
 .vscode/
 .idea/
-
-# app data (可选：如果你有本地题库文件等)
-data/

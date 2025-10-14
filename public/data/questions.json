@@ -1,0 +1,97 @@
+{
+  "categories": [
+    {
+      "id": "politics",
+      "name": "Politics",
+      "default_time_limit": 30,
+      "questions": [
+        {
+          "id": "pol-001",
+          "type": "truefalse",
+          "claim": "The government has officially passed a nationwide law that requires every social media profile to publicly display the user's real name.",
+          "truth": false,
+          "explanation": "This is a common misinterpretation. Proposals discussed in some regions refer to real-name verification on the backend, not mandatory public display for all users.",
+          "source_url": ""
+        },
+        {
+          "id": "pol-002",
+          "type": "truefalse",
+          "claim": "A presidential candidate promised to eliminate all personal income taxes during a debate.",
+          "truth": false,
+          "explanation": "The widely shared clip was edited. The original statement described targeted deductions/credits for specific brackets rather than abolishing all income taxes.",
+          "source_url": ""
+        },
+        {
+          "id": "pol-003",
+          "type": "truefalse",
+          "claim": "Ballots from a recent election were found in large numbers inside a river and were counted anyway.",
+          "truth": false,
+          "explanation": "Authorities reported isolated incidents of damaged mail, but those ballots were voided and not counted. The 'river' claim lacks credible sourcing.",
+          "source_url": ""
+        }
+      ]
+    },
+    {
+      "id": "medical",
+      "name": "Medical",
+      "default_time_limit": 30,
+      "questions": [
+        {
+          "id": "med-001",
+          "type": "truefalse",
+          "claim": "Drinking lemon water can dissolve kidney stones and replace medical treatment.",
+          "truth": false,
+          "explanation": "Hydration is helpful, but lemon water does not replace diagnosis or evidence-based treatment. Delaying care can increase risk.",
+          "source_url": ""
+        },
+        {
+          "id": "med-002",
+          "type": "truefalse",
+          "claim": "High-dose vitamin C reliably and significantly shortens the common cold for most people.",
+          "truth": false,
+          "explanation": "Evidence does not support a large, consistent effect. Benefits, if any, are modest and inconsistent across studies.",
+          "source_url": ""
+        },
+        {
+          "id": "med-003",
+          "type": "truefalse",
+          "claim": "Essential oils can cure bacterial infections without antibiotics.",
+          "truth": false,
+          "explanation": "Some lab studies show limited effects, but clinical evidence is insufficient. For bacterial infections, follow medical guidance on antibiotics.",
+          "source_url": ""
+        }
+      ]
+    },
+    {
+      "id": "tech",
+      "name": "Tech",
+      "default_time_limit": 30,
+      "questions": [
+        {
+          "id": "tech-001",
+          "type": "truefalse",
+          "claim": "AI-generated images can always be spotted by the human eye.",
+          "truth": false,
+          "explanation": "Visual cues can help, but many AI images are indistinguishable without forensic tools, metadata, or watermarking.",
+          "source_url": ""
+        },
+        {
+          "id": "tech-002",
+          "type": "truefalse",
+          "claim": "Disabling location permissions means apps cannot track you at all.",
+          "truth": false,
+          "explanation": "Apps may still infer behavior via network data, device fingerprints, or other signals. Permission controls reduce risk but don't guarantee anonymity.",
+          "source_url": ""
+        },
+        {
+          "id": "tech-003",
+          "type": "truefalse",
+          "claim": "A single viral post can permanently 'boost' an account so every future post goes viral.",
+          "truth": false,
+          "explanation": "Platform algorithms weigh many signals per post. Past success doesn't guarantee future reach without ongoing engagement and quality.",
+          "source_url": ""
+        }
+      ]
+    }
+  ]
+}
