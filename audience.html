@@ -4,6 +4,8 @@
   <meta charset="utf-8"/>
   <title>Street Challenge – Audience Vote</title>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <!-- ❌ 删除 meta refresh，使用 JavaScript 轮询代替 -->
+  <!-- <meta http-equiv="refresh" content="5"> -->
   <link href="/css/audience.css" rel="stylesheet">
 </head>
 <body>
@@ -50,7 +52,63 @@
     <ul id="messages" class="list"></ul>
   </div>
 
+  <!-- ⭐ 环境变量（必须在最前面） -->
   <script src="/env.js"></script>
+
+  <!-- ⭐ 简单的轮询方案（不依赖 audience.js） -->
+  <script>
+    setInterval(async function() {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const roomCode = urlParams.get('code');
+        
+        if (!roomCode || !window.SUPABASE_URL || !window.SUPABASE_ANON_KEY) return;
+        
+        const response = await fetch(
+          `${window.SUPABASE_URL}/rest/v1/rounds?code=eq.${roomCode}&select=*`, 
+          {
+            headers: {
+              'apikey': window.SUPABASE_ANON_KEY,
+              'Authorization': `Bearer ${window.SUPABASE_ANON_KEY}`
+            }
+          }
+        );
+        
+        const data = await response.json();
+        if (data && data[0]) {
+          const round = data[0];
+          
+          // 更新问题显示
+          const questionCard = document.getElementById('questionCard');
+          const currentQuestion = document.getElementById('currentQuestion');
+          const qNumber = document.getElementById('qNumber');
+          const questionType = document.getElementById('questionType');
+          
+          if (round.current_question && round.current_question.trim()) {
+            questionCard.style.display = 'block';
+            currentQuestion.textContent = round.current_question;
+            
+            const qNum = round.current_question_number || '—';
+            const qTotal = round.current_question_total || '—';
+            qNumber.textContent = `Q ${qNum} / ${qTotal}`;
+            
+            const qType = round.current_question_type === 'short' ? 'Short Answer' : 'True / False';
+            questionType.textContent = `Type: ${qType}`;
+            
+            console.log('🔄 [Audience] 问题已更新:', round.current_question.substring(0, 50) + '...');
+          } else {
+            questionCard.style.display = 'none';
+          }
+        }
+      } catch (e) {
+        console.error('❌ [Audience] 刷新失败:', e);
+      }
+    }, 3000); // 每 3 秒检查一次
+    
+    console.log('✅ [Audience] 轮询已启动（每 3 秒）');
+  </script>
+
+  <!-- ⭐ audience.js -->
   <script type="module" src="/js/audience.js?v=3"></script>
 </body>
 </html>

@@ -5,6 +5,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const socket = io();
 let currentRoom = "";
 let autoAdvanceTimer = null; // 自动跳转计时器
+window.currentRoom = ""; 
 
 /* ====================== helpers ====================== */
 function genCode(n=6){
@@ -89,6 +90,7 @@ function renderLeaderboard(rows){
 const SB_URL  = window.SUPABASE_URL;
 const SB_ANON = window.SUPABASE_ANON_KEY;
 const sb = (SB_URL && SB_ANON) ? createClient(SB_URL, SB_ANON) : null;
+window.sb = sb;
 let voteChannel = null;
 
 const statEl = document.getElementById('voteStat1');
@@ -435,6 +437,7 @@ $(function(){
     const r = ($room.val()||"").trim().toUpperCase();
     if(!r) return alert("Enter room code");
     currentRoom = r;
+    window.currentRoom = r;
 
     socket.emit("join", currentRoom);
 
@@ -562,32 +565,3 @@ $(function(){
     await clearCurrentQuestion();
   });
 });
-
-// 1. 检查变量
-console.log('=== Player1 状态检查 ===');
-console.log('sb 存在:', !!sb);
-console.log('currentRoom:', currentRoom);
-
-// 2. 手动写入测试数据
-const testUpdate = await sb
-  .from('rounds')
-  .update({
-    current_question: 'MANUAL TEST QUESTION - ' + new Date().toLocaleTimeString(),
-    current_question_type: 'truefalse',
-    current_question_number: 1,
-    current_question_total: 5,
-    current_question_time_limit: 30
-  })
-  .eq('code', currentRoom)
-  .select();
-
-console.log('手动更新结果:', testUpdate);
-
-// 3. 立即验证是否写入成功
-const verify = await sb
-  .from('rounds')
-  .select('code, current_question, current_question_number')
-  .eq('code', currentRoom)
-  .single();
-
-console.log('验证结果:', verify.data);

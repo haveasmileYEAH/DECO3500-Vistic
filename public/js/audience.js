@@ -298,3 +298,10 @@ if (round && round.current_question) {
   updateCurrentQuestion(round);
   console.log('问题卡片显示状态:', questionCard.style.display);
 }
+
+// 暴露到全局作用域（用于调试）
+window.supabase = supabase
+window.updateCurrentQuestion = updateCurrentQuestion
+window.joinRound = joinRound
+window.startPolling = startPolling
+window.pollInterval = pollInterval
