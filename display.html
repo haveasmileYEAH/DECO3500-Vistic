@@ -7,6 +7,19 @@
   <!-- ❌ 删除这行！不要用 meta refresh -->
   <!-- <meta http-equiv="refresh" content="5"> -->
   <link href="/css/display.css" rel="stylesheet">
+  <!-- New Theme 2 code Load the new v2 CSS only when ?theme=v2 -->
+  <script>
+    (function () {
+      const p = new URLSearchParams(location.search);
+      if (p.get('theme') === 'v2') {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = '/css/display_v2.css?v=dev1';
+        document.head.appendChild(link);
+      }
+    })();
+  </script>
+  <!-- New Theme 2 code Load the new v2 CSS only when ?theme=v2 -->
 </head>
 <body>
   <div class="wrap">

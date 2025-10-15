@@ -1,0 +1,132 @@
+/* Player 2 — V2 dark purple theme
+   NOTE: This ONLY changes visuals; class names/ids match the existing HTM.
+*/
+
+:root{
+  --bg:#0f0b1c;
+  --panel:#1c1233;
+  --panel-2:#2a194d;
+  --text:#eef0ff;
+  --muted:#b9b5d1;
+  --primary:#8b5cf6;   /* purple */
+  --accent:#60a5fa;    /* blue */
+  --up:#22c55e;
+  --down:#ef4444;
+  --border:rgba(255,255,255,.10);
+  --shadow:0 10px 30px rgba(0,0,0,.35);
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background: radial-gradient(1200px 800px at 20% -20%, #261a4a 0%, transparent 60%) , var(--bg);
+  color:var(--text);
+  font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+}
+
+/* Header (reuse .site-header markup) */
+.site-header{
+  position:sticky; top:0; z-index:20;
+  background: var(--panel-2);
+  border-bottom:1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+.brand{display:flex; align-items:center; gap:10px; padding:10px 16px}
+.logo{
+  width:28px; height:28px; border-radius:8px;
+  background: linear-gradient(135deg,#60a5fa,#a78bfa);
+  display:inline-grid; place-items:center; color:#fff; font-weight:800
+}
+.title{font-weight:700; letter-spacing:.3px}
+.role{margin-left:auto; color:var(--muted)}
+
+/* Layout & Cards */
+.wrap{ max-width:780px; margin:22px auto; padding:0 16px }
+.card{
+  background: var(--panel);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:16px;
+  box-shadow: var(--shadow);
+}
+.card-title{ margin:0 0 10px; font-size:18px; font-weight:800; color:var(--text) }
+
+.hidden{display:none !important}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+.mono{font-family:var(--mono)}
+
+/* Inputs & Buttons */
+.input, .btn, .progress{
+  border-radius:10px; border:1px solid var(--border)
+}
+.input{
+  width:100%; background:#160f2a; color:var(--text); padding:10px 12px; outline:none
+}
+.input:focus{ box-shadow:0 0 0 3px rgba(139,92,246,.25); border-color:#a78bfa }
+
+.btn{
+  background:#180f2d; color:var(--text); padding:10px 12px; cursor:pointer;
+  transition:transform .06s ease, filter .15s
+}
+.btn:hover{ filter:brightness(1.06) }
+.btn:active{ transform:translateY(1px) }
+.btn-primary{ background:linear-gradient(135deg,#8b5cf6,#6366f1); color:#fff; border-color:transparent }
+
+/* Form grids / radios */
+.form-grid{ display:grid; gap:10px }
+.label{ color:var(--muted); font-size:12px; letter-spacing:.2px }
+.radio-row{ display:flex; gap:18px; align-items:center }
+.radio input{ transform:translateY(1px) }
+.btn-row{ display:flex; gap:10px; flex-wrap:wrap }
+
+/* Question blocks */
+.qtext{
+  margin-bottom:10px; padding:12px;
+  background:#170f2c; border:1px solid var(--border); border-radius:10px; color:var(--text)
+}
+
+/* Timers */
+.progress{ height:10px; background:#2a1c4d; overflow:hidden }
+.progress-bar{ height:10px; width:0%; background:linear-gradient(90deg,#60a5fa,#a78bfa); transition:width .25s }
+.timer-text{ margin-top:6px; color:var(--muted) }
+
+/* Result badge */
+.badge{
+  display:inline-block; padding:6px 10px; border-radius:999px;
+  background:rgba(167,139,250,.15); color:#e9e7ff; border:1px solid rgba(167,139,250,.35)
+}
+
+/* Live vote bar */
+.bar{ height:12px; background:#2a1c4d; border-radius:999px; overflow:hidden }
+.up{ height:100%; background:linear-gradient(90deg,#22c55e,#60a5fa); transition:width .2s }
+
+/* Completion card + leaderboard */
+.completion-card{
+  background:linear-gradient(135deg, rgba(139,92,246,.14), rgba(96,165,250,.12));
+  border:1px solid rgba(139,92,246,.35);
+}
+.completion-header{ text-align:center; padding:20px 0 }
+.completion-title{ font-size:28px; font-weight:800; color:#d9d6ff; margin:0 0 10px }
+.completion-message{ font-size:16px; line-height:1.6; color:var(--text); margin:0 }
+
+/* Table */
+.table-wrap{ overflow:auto; margin-top:12px }
+.table{ width:100%; border-collapse:collapse; background:#170f2c; color:var(--text) }
+.table th,.table td{ padding:10px 12px; border-bottom:1px solid var(--border); text-align:left }
+.table thead th{ color:var(--muted); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.5px }
+.table tbody tr:hover{ background:#1a1233 }
+
+/* Helpers */
+.row{ display:flex; align-items:center }
+.between{ justify-content:space-between }
+
+/* Responsive */
+@media (max-width: 520px){
+  .wrap{ max-width:100% }
+  .completion-title{ font-size:24px }
+  .completion-message{ font-size:14px }
+}

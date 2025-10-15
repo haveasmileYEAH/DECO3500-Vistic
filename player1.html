@@ -4,8 +4,26 @@
   <meta charset="utf-8"/>
   <title>Street Challenge · Player 1 (Host)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+
   <link href="/css/player1.css" rel="stylesheet">
+
+  <!-- New Theme 2 code Load the new v2 CSS only when ?theme=v2 -->
+  <script>
+    (function(){
+      const params = new URLSearchParams(location.search);
+      if (params.get('theme') === 'v2') {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = '/css/player1_v2.css?v=dev1'; 
+        document.head.appendChild(link);
+        console.log('[Theme] player1_v2.css loaded');
+      }
+    })();
+  </script>
+    <!-- New Theme 2 code Load the new v2 CSS only when ?theme=v2 -->
 </head>
+
 <body>
   <header class="site-header">
     <div class="brand">

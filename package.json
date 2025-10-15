@@ -19,7 +19,7 @@
   "homepage": "https://github.com/mattmartian/SocketIO-Kahoot#readme",
   "dependencies": {
     "@supabase/supabase-js": "^2.58.0",
-    "dotenv": "^17.2.2",
+    "dotenv": "^17.2.3",
     "express": "^4.16.2",
     "http": "0.0.0",
     "qrcode": "^1.5.4",
