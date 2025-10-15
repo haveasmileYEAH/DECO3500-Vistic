@@ -58,6 +58,14 @@ Audience voting: http://localhost:3000/audience?code=XXXXXX
 
 Big screen display: http://localhost:3000/display?code=XXXXXX
 
+New Theme - “V2” dark/modern theme can be access:
+
+Host page (Player 1): http://localhost:3000/player1?theme=v2
+Challenger (Player 2): http://localhost:3000/player2?theme=v2
+Audience voting: http://localhost:3000/audience?theme=v2
+Big screen display: http://localhost:3000/display?theme=v2
+
+
 5) How to run a round (demo flow)
 
 On Player 1:
