@@ -4,8 +4,6 @@
   <meta charset="utf-8"/>
   <title>Street Challenge – Display</title>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <!-- ❌ 删除这行！不要用 meta refresh -->
-  <!-- <meta http-equiv="refresh" content="5"> -->
   <link href="/css/display.css" rel="stylesheet">
 </head>
 <body>
@@ -24,7 +22,21 @@
       <div id="body" class="body">Loading body…</div>
     </div>
 
-    <!-- 新增：当前问题卡片 -->
+    <!-- ⭐ 新增：二维码卡片 -->
+    <div class="card" id="qrCard" style="display:none; margin-top:16px">
+      <div class="row between" style="margin-bottom: 12px;">
+        <span class="chip">📱 Scan to Join as Audience</span>
+        <span id="qrRoomCode" class="code">—</span>
+      </div>
+      <div style="text-align: center; padding: 20px; background: #f9fafb; border-radius: 12px;">
+        <img id="qrCanvas" width="200" height="200" style="display:inline-block; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" alt="QR Code" />
+        <p style="margin-top: 16px; font-size: 14px; color: #64748b; font-weight: 500;">
+          📷 Scan with your phone to join as audience
+        </p>
+      </div>
+    </div>
+
+    <!-- 当前问题卡片 -->
     <div class="card" id="questionCard" style="display:none; margin-top:16px">
       <div class="row between">
         <span class="chip">Current Question</span>
@@ -37,12 +49,46 @@
       </div>
     </div>
 
-    <div class="grid" style="margin-top:16px">
-      <div class="card">
-        <div class="row between"><span class="chip">Live Votes</span><div id="stat" class="stat">👍 0 | 👎 0 (0% up)</div></div>
-        <div class="bar" style="margin-top:10px"><div id="barUp" class="up" style="width:0%"></div></div>
-        <div id="revealBox" style="margin-top:10px; display:none"><span class="chip">Revealed</span> <span id="truth" class="truth">Truth: —</span></div>
+    <div class="card">
+  <div class="vote-chart">
+    <div class="chart-title">
+      <span class="chip">Live Votes</span>
+    </div>
+    <div class="chart-container">
+      <!-- True 柱 -->
+      <div class="chart-bar-wrapper">
+        <div class="chart-label">👍 True</div>
+        <div class="chart-bar-bg">
+          <div id="barTrue" class="chart-bar chart-bar-true" style="height:0%">
+            <span class="chart-value" id="valueTrue">0</span>
+          </div>
+        </div>
+        <div class="chart-count" id="countTrue">0 votes</div>
       </div>
+      
+      <!-- False 柱 -->
+      <div class="chart-bar-wrapper">
+        <div class="chart-label">👎 False</div>
+        <div class="chart-bar-bg">
+          <div id="barFalse" class="chart-bar chart-bar-false" style="height:0%">
+            <span class="chart-value" id="valueFalse">0</span>
+          </div>
+        </div>
+        <div class="chart-count" id="countFalse">0 votes</div>
+      </div>
+    </div>
+    
+    <!-- 统计信息 -->
+    <div class="chart-stats" id="stat">
+      Total: 0 votes | True: 0% | False: 0%
+    </div>
+  </div>
+  
+  <div id="revealBox" style="margin-top:10px; display:none">
+    <span class="chip">Revealed</span> 
+    <span id="truth" class="truth">Truth: —</span>
+  </div>
+</div>
 
       <div class="card">
         <div class="row between"><span class="chip">Live Hints</span><div class="small">Newest last • auto-scroll</div></div>
@@ -55,12 +101,11 @@
     </div>
   </div>
 
-  <!-- ⭐ 环境变量（必须在最前面） -->
+  <!-- 环境变量 -->
   <script src="/env.js"></script>
 
-  <!-- ⭐ 轮询脚本（在 display.js 之前） -->
+  <!-- 轮询脚本 -->
   <script>
-    // 简单的轮询方案
     setInterval(async function() {
       try {
         const urlParams = new URLSearchParams(window.location.search);
@@ -82,7 +127,6 @@
         if (data && data[0]) {
           const round = data[0];
           
-          // 更新问题显示
           const questionCard = document.getElementById('questionCard');
           const currentQuestion = document.getElementById('currentQuestion');
           const qNumber = document.getElementById('qNumber');
@@ -114,12 +158,11 @@
       } catch (e) {
         console.error('❌ [Display] 刷新失败:', e);
       }
-    }, 3000); // 每 3 秒检查一次
+    }, 3000);
     
     console.log('✅ [Display] 轮询已启动（每 3 秒）');
   </script>
 
-  <!-- ⭐ display.js（不是 audience.js！） -->
-  <script type="module" src="/js/display.js?v=2"></script>
+  <script type="module" src="/js/display.js?v=3"></script>
 </body>
 </html>

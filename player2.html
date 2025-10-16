@@ -38,16 +38,39 @@
       </section>
 
       <!-- Live Votes (Audience) -->
-      <section id="voteCard" class="card">
-        <h2 class="card-title">Live Votes</h2>
-        <div class="row between">
-          <span class="muted small">Real-time votes from Audience</span>
-          <span id="voteStat2" class="small">👍 0 | 👎 0 (0% up)</span>
+      <div class="card" id="voteChartCard" style="display:none; margin-top:16px;">
+  <div class="vote-chart">
+    <div class="chart-title">Live Voting Results</div>
+    <div class="chart-container">
+      <!-- True 柱 -->
+      <div class="chart-bar-wrapper">
+        <div class="chart-label">👍 True</div>
+        <div class="chart-bar-bg">
+          <div id="barTrue" class="chart-bar chart-bar-true" style="height:0%">
+            <span class="chart-value" id="valueTrue">0</span>
+          </div>
         </div>
-        <div class="bar" style="margin-top:8px">
-          <div id="voteBarUp2" class="up" style="width:0%"></div>
+        <div class="chart-count" id="countTrue">0 votes</div>
+      </div>
+      
+      <!-- False 柱 -->
+      <div class="chart-bar-wrapper">
+        <div class="chart-label">👎 False</div>
+        <div class="chart-bar-bg">
+          <div id="barFalse" class="chart-bar chart-bar-false" style="height:0%">
+            <span class="chart-value" id="valueFalse">0</span>
+          </div>
         </div>
-      </section>
+        <div class="chart-count" id="countFalse">0 votes</div>
+      </div>
+    </div>
+    
+    <!-- 统计信息 -->
+    <div class="chart-stats" id="voteStats">
+      Total: 0 votes | True: 0% | False: 0%
+    </div>
+  </div>
+</div>
 
       <!-- Live · Short Answer -->
       <section id="shortAnswer" class="card hidden">

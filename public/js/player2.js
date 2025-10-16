@@ -5,6 +5,7 @@
 let socket = null;        // lazy-inited
 let username = "", room = "";
 let onlineTimer1 = null, onlineTimer2 = null;
+let voteRefreshTimer = null; // ⭐ 添加投票刷新定时器
 
 /* ============== helpers ============== */
 function parseQuery(name){
@@ -76,19 +77,82 @@ async function initSupabase(){
     // votes disabled silently if CDN blocked
   }
 }
+
+// ⭐ 刷新投票柱状图
 async function refreshVotes(){
   if (!sb || !room) return;
-  try{
+  
+  try {
     const { data, error } = await sb.rpc('get_vote_counts', { p_round_code: room });
-    if (error) { console.error('[P2] get_vote_counts', error.message); return; }
-    const up = data?.up || 0, down = data?.down || 0, total = up + down;
-    const pct = total ? Math.round(up / total * 100) : 0;
-    if (statEl) statEl.textContent = `👍 ${up} | 👎 ${down} (${pct}% up)`;
-    if (barEl)  barEl.style.width = pct + '%';
-  } catch(e){
-    console.error('[P2] refreshVotes error', e);
+    if (error) {
+      console.error('[P2] get_vote_counts error:', error.message);
+      return;
+    }
+    
+    const up = data?.up || 0;
+    const down = data?.down || 0;
+    const total = up + down;
+    
+    // 计算百分比
+    const truePct = total ? Math.round((up / total) * 100) : 0;
+    const falsePct = total ? Math.round((down / total) * 100) : 0;
+    
+    // 更新柱状图
+    const voteChartCard = document.getElementById('voteChartCard');
+    const barTrue = document.getElementById('barTrue');
+    const barFalse = document.getElementById('barFalse');
+    const valueTrue = document.getElementById('valueTrue');
+    const valueFalse = document.getElementById('valueFalse');
+    const countTrue = document.getElementById('countTrue');
+    const countFalse = document.getElementById('countFalse');
+    const voteStats = document.getElementById('voteStats');
+    
+    // 显示图表卡片
+    if (voteChartCard && total > 0) {
+      voteChartCard.style.display = 'block';
+    }
+    
+    if (barTrue) barTrue.style.height = truePct + '%';
+    if (barFalse) barFalse.style.height = falsePct + '%';
+    
+    if (valueTrue) valueTrue.textContent = truePct + '%';
+    if (valueFalse) valueFalse.textContent = falsePct + '%';
+    
+    if (countTrue) countTrue.textContent = `${up} vote${up !== 1 ? 's' : ''}`;
+    if (countFalse) countFalse.textContent = `${down} vote${down !== 1 ? 's' : ''}`;
+    
+    if (voteStats) {
+      voteStats.textContent = `Total: ${total} vote${total !== 1 ? 's' : ''} | True: ${truePct}% | False: ${falsePct}%`;
+    }
+    
+    console.log('[P2] Vote chart updated:', { up, down, truePct, falsePct });
+  } catch (e) {
+    console.error('[P2] Error refreshing vote chart:', e);
   }
 }
+
+// ⭐ 启动投票刷新定时器
+function startVoteRefresh(){
+  if (voteRefreshTimer) {
+    clearInterval(voteRefreshTimer);
+  }
+  voteRefreshTimer = setInterval(() => {
+    if (room) {
+      refreshVotes();
+    }
+  }, 3000);
+  console.log('[P2] Vote refresh timer started');
+}
+
+// ⭐ 停止投票刷新定时器
+function stopVoteRefresh(){
+  if (voteRefreshTimer) {
+    clearInterval(voteRefreshTimer);
+    voteRefreshTimer = null;
+    console.log('[P2] Vote refresh timer stopped');
+  }
+}
+
 function subscribeVotes(){
   if (!sb) return;
   if (voteChannel) { sb.removeChannel(voteChannel); voteChannel = null; }
@@ -127,6 +191,9 @@ function attachSocketListeners(){
       clearOnlineTimers(); onlineTimer2 = startTimer("sTimerBar2","timer2", msg.timeLimit);
     }
     hide("feedbackCard"); $("#result").text("—"); $("#answertext").text("");
+    
+    // ⭐ 收到问题后刷新投票图表
+    refreshVotes();
   });
 
   // Feedback
@@ -200,11 +267,15 @@ $(async function(){
 
     // Votes (safe if sb == null)
     subscribeVotes();
+    
+    // ⭐ 启动投票刷新定时器
+    startVoteRefresh();
   });
 
   // Exit -> back to Lobby
   $("#exitOnline, #exitOnline2, #exitOnline3").on("click", function(){
     clearOnlineTimers();
+    stopVoteRefresh(); // ⭐ 停止投票刷新
     hide("shortAnswer"); hide("trueOrFalse"); hide("greeting");
     hide("feedbackCard"); hide("voteCard"); hide("completionCard");
     show("lobby");

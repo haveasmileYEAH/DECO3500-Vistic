@@ -1,4 +1,4 @@
-// /public/js/display.js - 清理版本
+// /public/js/display.js
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const url = window.SUPABASE_URL
@@ -8,6 +8,47 @@ if (!url || !anon) {
   throw new Error('env')
 }
 const supabase = createClient(url, anon)
+
+// ⭐ 生成 Audience URL
+function audienceUrlFor(room){
+  const host = window.location.host;
+  const protocol = window.location.protocol;
+  const u = new URL(`${protocol}//${host}/audience`);
+  u.searchParams.set("code", room);
+  return u.toString();
+}
+
+// ⭐ 生成二维码
+function generateQRCode(roomCode){
+  const qrCanvas = document.getElementById('qrCanvas');
+  const qrCard = document.getElementById('qrCard');
+  const qrRoomCode = document.getElementById('qrRoomCode');
+  
+  if (!qrCanvas || !qrCard) {
+    console.error('[display] QR elements not found');
+    return;
+  }
+  
+  const audienceUrl = audienceUrlFor(roomCode);
+  console.log('[display] Generating QR Code for:', audienceUrl);
+  
+  // 使用 QR Server API
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(audienceUrl)}`;
+  
+  qrCanvas.onload = () => {
+    console.log('[display] ✅ QR Code loaded successfully');
+    qrCard.style.display = 'block';
+    qrRoomCode.textContent = roomCode;
+  };
+  
+  qrCanvas.onerror = () => {
+    console.error('[display] Failed to load QR Code');
+    qrCanvas.alt = 'QR Code Failed';
+    qrCanvas.style.border = '2px solid #f87171';
+  };
+  
+  qrCanvas.src = qrUrl;
+}
 
 // DOM Elements
 const codeEl   = document.getElementById('codeEl')
@@ -61,6 +102,9 @@ function setCode(c){
     titleEl.textContent = 'Enter a round code to start display.'
     bodyEl.textContent = ''
     questionCard.style.display = 'none'
+    // ⭐ 隐藏二维码卡片
+    const qrCard = document.getElementById('qrCard');
+    if (qrCard) qrCard.style.display = 'none';
     return 
   }
   
@@ -68,6 +112,8 @@ function setCode(c){
   loadRound().then(()=>{
     subscribe()
     startPolling()
+    // ⭐ 生成二维码
+    generateQRCode(code)
   })
 }
 
@@ -172,13 +218,37 @@ async function refreshVotes(){
     return 
   }
   
-  const up = data?.up||0
-  const down = data?.down||0
-  const total = up+down
-  const pct = total ? Math.round((up/total)*100) : 0
+  const up = data?.up || 0
+  const down = data?.down || 0
+  const total = up + down
   
-  barUp.style.width = pct + '%'
-  stat.textContent = `👍 ${up} | 👎 ${down} (${pct}% up)`
+  // 计算百分比
+  const truePct = total ? Math.round((up / total) * 100) : 0
+  const falsePct = total ? Math.round((down / total) * 100) : 0
+  
+  // 更新柱状图
+  const barTrue = document.getElementById('barTrue')
+  const barFalse = document.getElementById('barFalse')
+  const valueTrue = document.getElementById('valueTrue')
+  const valueFalse = document.getElementById('valueFalse')
+  const countTrue = document.getElementById('countTrue')
+  const countFalse = document.getElementById('countFalse')
+  const stat = document.getElementById('stat')
+  
+  if (barTrue) barTrue.style.height = truePct + '%'
+  if (barFalse) barFalse.style.height = falsePct + '%'
+  
+  if (valueTrue) valueTrue.textContent = truePct + '%'
+  if (valueFalse) valueFalse.textContent = falsePct + '%'
+  
+  if (countTrue) countTrue.textContent = `${up} vote${up !== 1 ? 's' : ''}`
+  if (countFalse) countFalse.textContent = `${down} vote${down !== 1 ? 's' : ''}`
+  
+  if (stat) {
+    stat.textContent = `Total: ${total} vote${total !== 1 ? 's' : ''} | True: ${truePct}% | False: ${falsePct}%`
+  }
+  
+  console.log('[display] Vote chart updated:', { up, down, truePct, falsePct })
 }
 
 // Add Message to List

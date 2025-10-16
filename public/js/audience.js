@@ -19,8 +19,6 @@ const bodyEl  = document.getElementById('body')
 
 const upBtn   = document.getElementById('up')
 const downBtn = document.getElementById('down')
-const stat    = document.getElementById('stat')
-const barUp   = document.getElementById('barUp')
 
 const hint    = document.getElementById('hint')
 const sendBtn = document.getElementById('send')
@@ -181,10 +179,34 @@ async function refreshVotes(){
   const up = data?.up || 0
   const down = data?.down || 0
   const total = up + down
-  const pct = total ? Math.round(up/total*100) : 0
   
-  stat.textContent = `👍 ${up} | 👎 ${down} (${pct}% up)`
-  barUp.style.width = pct + '%'
+  // 计算百分比
+  const truePct = total ? Math.round((up / total) * 100) : 0
+  const falsePct = total ? Math.round((down / total) * 100) : 0
+  
+  // 更新柱状图
+  const barTrue = document.getElementById('barTrue')
+  const barFalse = document.getElementById('barFalse')
+  const valueTrue = document.getElementById('valueTrue')
+  const valueFalse = document.getElementById('valueFalse')
+  const countTrue = document.getElementById('countTrue')
+  const countFalse = document.getElementById('countFalse')
+  const stat = document.getElementById('stat')
+  
+  if (barTrue) barTrue.style.height = truePct + '%'
+  if (barFalse) barFalse.style.height = falsePct + '%'
+  
+  if (valueTrue) valueTrue.textContent = truePct + '%'
+  if (valueFalse) valueFalse.textContent = falsePct + '%'
+  
+  if (countTrue) countTrue.textContent = `${up} vote${up !== 1 ? 's' : ''}`
+  if (countFalse) countFalse.textContent = `${down} vote${down !== 1 ? 's' : ''}`
+  
+  if (stat) {
+    stat.textContent = `Total: ${total} vote${total !== 1 ? 's' : ''} | True: ${truePct}% | False: ${falsePct}%`
+  }
+  
+  console.log('[audience] Vote chart updated:', { up, down, truePct, falsePct })
 }
 
 // Load Messages

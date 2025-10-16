@@ -470,23 +470,16 @@ $(function(){
     $("#roomCodeText").text(currentRoom);
     const urlAud = audienceUrlFor(currentRoom);
     $("#joinUrl").text(urlAud).attr("href", urlAud);
-    
-    // ⭐ 生成二维码
-    drawQR("qrCanvas", urlAud);
-
     socket.emit("getLeaderboard", currentRoom);
 
     try {
       if (sb) {
-        const title = ($("#roundTitle").val() || "Street Challenge Round").trim();
-        const body  = ($("#roundBody").val()  || "Host will present the story...").trim();
         const payload = { 
           code: currentRoom, 
-          title, 
-          body, 
+          title: "Street Challenge Round", 
+          body: "Interactive quiz game",     
           status: 'live', 
           truth: null,
-          // ⭐ 初始化问题字段为 null
           current_question: null,
           current_question_type: null,
           current_question_time_limit: null,
