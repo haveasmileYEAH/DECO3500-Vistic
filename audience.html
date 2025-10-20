@@ -7,6 +7,22 @@
   <!-- ❌ 删除 meta refresh，使用 JavaScript 轮询代替 -->
   <!-- <meta http-equiv="refresh" content="5"> -->
   <link href="/css/audience.css" rel="stylesheet">
+
+  <!-- New Theme 2 code Load the new v2 CSS only when ?theme=v2 -->
+  <script>
+    (function(){
+      const p=new URLSearchParams(location.search);
+      if(p.get('theme')==='v2'){
+        const link=document.createElement('link');
+        link.rel='stylesheet';
+        link.href='/css/audience_v2.css?v=dev1';
+        document.head.appendChild(link);
+      }
+    })();
+  </script>
+
+  <!-- New Theme 2 code Load the new v2 CSS only when ?theme=v2 -->
+
 </head>
 <body>
   <h1>Street Challenge – Audience</h1>
