@@ -8,9 +8,9 @@
         {
           "id": "pol-001",
           "type": "truefalse",
-          "claim": "The government has officially passed a nationwide law that requires every social media profile to publicly display the user's real name.",
+          "claim": "The government has officially passed a national \"real-name\" rule requiring every social media profile to publicly display the user's real name.",
           "truth": false,
-          "explanation": "This is a common misinterpretation. Proposals discussed in some regions refer to real-name verification on the backend, not mandatory public display for all users.",
+          "explanation": "This is a common misinterpretation. Proposed identity verification policies target account creation verification on the backend, not mandatory public display for all users.",
           "source_url": ""
         },
         {
@@ -18,15 +18,111 @@
           "type": "truefalse",
           "claim": "A presidential candidate promised to eliminate all personal income taxes during a debate.",
           "truth": false,
-          "explanation": "The widely shared clip was edited. The original statement described targeted deductions/credits for specific brackets rather than abolishing all income taxes.",
+          "explanation": "The widely shared clip was edited. The full statement discussed simplifying brackets and increasing credits for specific brackets rather than abolishing all income taxes.",
           "source_url": ""
         },
         {
           "id": "pol-003",
           "type": "truefalse",
-          "claim": "Ballots from a recent election were found in large numbers inside a river and were counted anyway.",
+          "claim": "A city council secretly approved a plan to sell all public parks to private developers.",
           "truth": false,
-          "explanation": "Authorities reported isolated incidents of damaged mail, but those ballots were voided and not counted. The 'river' claim lacks credible sourcing.",
+          "explanation": "Land sales of public parks require formal hearings and public records. Meeting minutes show only a feasibility study authorization, not a sale.",
+          "source_url": ""
+        },
+        {
+          "id": "pol-004",
+          "type": "truefalse",
+          "claim": "The national election date was moved forward by two weeks without any parliamentary vote.",
+          "truth": false,
+          "explanation": "Changing a federal election date requires legal procedures and announcements. No official notice or legislative action corroborates the claim.",
+          "source_url": ""
+        },
+        {
+          "id": "pol-005",
+          "type": "truefalse",
+          "claim": "A foreign government purchased the voter database for the entire country.",
+          "truth": false,
+          "explanation": "Voter rolls are regulated by domestic laws and are not sold to foreign governments. Public versions exist but exclude sensitive personal data.",
+          "source_url": ""
+        },
+        {
+          "id": "pol-006",
+          "type": "truefalse",
+          "claim": "The legislature passed a law making it illegal to criticize public officials online.",
+          "truth": false,
+          "explanation": "Defamation and harassment laws exist, but political criticism remains protected speech. The referenced bill targeted coordinated doxxing and threats, not general criticism.",
+          "source_url": ""
+        },
+        {
+          "id": "pol-007",
+          "type": "truefalse",
+          "claim": "A viral photo shows the legislature voting at 3 a.m. without any public notice.",
+          "truth": false,
+          "explanation": "Late-night sessions happen, but meeting schedules and agendas are typically posted in advance; the photo is from an unrelated night-shift security drill.",
+          "source_url": ""
+        },
+        {
+          "id": "pol-008",
+          "type": "truefalse",
+          "claim": "The national constitution was secretly amended last week without a public vote or debate.",
+          "truth": false,
+          "explanation": "Constitutional amendments require formal procedures with recorded debates and public records; no such records exist for last week.",
+          "source_url": ""
+        },
+        {
+          "id": "pol-009",
+          "type": "truefalse",
+          "claim": "A minister said in an interview that journalists who spread 'fake news' should be jailed.",
+          "truth": false,
+          "explanation": "A clipped reel removed the preceding clarification about existing defamation laws; the minister did not call for jailing journalists broadly.",
+          "source_url": ""
+        },
+        {
+          "id": "pol-010",
+          "type": "truefalse",
+          "claim": "All protest permits were suspended nationwide for the next six months.",
+          "truth": false,
+          "explanation": "Permit policies are local. No nationwide moratorium has been enacted; isolated suspensions may occur for safety or special events.",
+          "source_url": ""
+        },
+        {
+          "id": "pol-011",
+          "type": "truefalse",
+          "claim": "Most democracies conduct independent audits or recount processes to verify election results.",
+          "truth": true,
+          "explanation": "Post-election audits and recounts are standard safeguards designed to verify tabulation accuracy and strengthen public confidence.",
+          "source_url": ""
+        },
+        {
+          "id": "pol-012",
+          "type": "truefalse",
+          "claim": "Freedom of Information laws in many countries allow citizens to request government records, subject to limited exemptions.",
+          "truth": true,
+          "explanation": "FOI/FOIA regimes create a formal process for record requests while protecting sensitive areas like personal data and national security.",
+          "source_url": ""
+        },
+        {
+          "id": "pol-013",
+          "type": "truefalse",
+          "claim": "Amending a national constitution generally requires formal procedures that are public and recorded.",
+          "truth": true,
+          "explanation": "Constitutional change typically involves supermajorities, referenda, or multiple readings, with official minutes and records.",
+          "source_url": ""
+        },
+        {
+          "id": "pol-014",
+          "type": "truefalse",
+          "claim": "Campaign finance regulations commonly require candidates or parties to disclose donors above certain thresholds.",
+          "truth": true,
+          "explanation": "Disclosure thresholds aim to increase transparency while balancing privacy for small donors.",
+          "source_url": ""
+        },
+        {
+          "id": "pol-015",
+          "type": "truefalse",
+          "claim": "Parliamentary debates are usually recorded in official transcripts that are publicly accessible.",
+          "truth": true,
+          "explanation": "Hansard-style records document proceedings for accountability and historical reference.",
           "source_url": ""
         }
       ]
@@ -39,25 +135,121 @@
         {
           "id": "med-001",
           "type": "truefalse",
-          "claim": "Drinking lemon water can dissolve kidney stones and replace medical treatment.",
+          "claim": "Vitamin C megadoses can cure the common cold.",
           "truth": false,
-          "explanation": "Hydration is helpful, but lemon water does not replace diagnosis or evidence-based treatment. Delaying care can increase risk.",
+          "explanation": "Evidence shows vitamin C may slightly reduce duration in some cases but does not cure colds; prevention and symptomatic care remain standard.",
           "source_url": ""
         },
         {
           "id": "med-002",
           "type": "truefalse",
-          "claim": "High-dose vitamin C reliably and significantly shortens the common cold for most people.",
+          "claim": "Essential oils can reverse late-stage cancer.",
           "truth": false,
-          "explanation": "Evidence does not support a large, consistent effect. Benefits, if any, are modest and inconsistent across studies.",
+          "explanation": "No credible clinical trials demonstrate reversal of advanced cancers with essential oils. Standard oncology treatments are evidence-based.",
           "source_url": ""
         },
         {
           "id": "med-003",
           "type": "truefalse",
-          "claim": "Essential oils can cure bacterial infections without antibiotics.",
+          "claim": "Detox foot pads pull heavy metals and 'toxins' out of your body overnight.",
           "truth": false,
-          "explanation": "Some lab studies show limited effects, but clinical evidence is insufficient. For bacterial infections, follow medical guidance on antibiotics.",
+          "explanation": "Color changes are due to pad ingredients reacting to moisture; there is no credible evidence of toxin extraction via skin.",
+          "source_url": ""
+        },
+        {
+          "id": "med-004",
+          "type": "truefalse",
+          "claim": "Raw garlic can replace antibiotics for serious infections.",
+          "truth": false,
+          "explanation": "While compounds show lab activity, clinical dosing and safety for treating serious infections are unproven; delaying care is risky.",
+          "source_url": ""
+        },
+        {
+          "id": "med-005",
+          "type": "truefalse",
+          "claim": "Melatonin gummies are harmless for children because they are 'natural'.",
+          "truth": false,
+          "explanation": "Melatonin affects sleep-wake cycles; dosing and quality vary. Parents should follow medical advice rather than assume universal safety.",
+          "source_url": ""
+        },
+        {
+          "id": "med-006",
+          "type": "truefalse",
+          "claim": "You can fully 'reset' your metabolism in 7 days using a specific diet.",
+          "truth": false,
+          "explanation": "Short-term diets may change water weight and glycogen, but do not permanently reset basal metabolic rate.",
+          "source_url": ""
+        },
+        {
+          "id": "med-007",
+          "type": "truefalse",
+          "claim": "Alkaline water cures acid reflux by changing blood pH.",
+          "truth": false,
+          "explanation": "Drinking water has minimal effect on tightly regulated blood pH; reflux management involves multiple lifestyle and medical factors.",
+          "source_url": ""
+        },
+        {
+          "id": "med-008",
+          "type": "truefalse",
+          "claim": "Taking antibiotics 'just in case' helps with viral colds.",
+          "truth": false,
+          "explanation": "Antibiotics do not treat viruses and unnecessary use increases side effects and resistance.",
+          "source_url": ""
+        },
+        {
+          "id": "med-009",
+          "type": "truefalse",
+          "claim": "Copper bracelets reliably reduce arthritis inflammation.",
+          "truth": false,
+          "explanation": "Placebo-controlled studies show no consistent anti-inflammatory effect beyond placebo.",
+          "source_url": ""
+        },
+        {
+          "id": "med-010",
+          "type": "truefalse",
+          "claim": "Daily multivitamins eliminate the need for a balanced diet.",
+          "truth": false,
+          "explanation": "Supplements can address deficiencies but cannot replace the benefits of varied whole foods, fiber, and overall dietary patterns.",
+          "source_url": ""
+        },
+        {
+          "id": "med-011",
+          "type": "truefalse",
+          "claim": "Vaccines must pass phased clinical trials for safety and efficacy before regulatory approval.",
+          "truth": true,
+          "explanation": "Phases I–III assess safety, dosing, and effectiveness; post-marketing surveillance continues monitoring.",
+          "source_url": ""
+        },
+        {
+          "id": "med-012",
+          "type": "truefalse",
+          "claim": "Overuse and misuse of antibiotics contribute to antimicrobial resistance.",
+          "truth": true,
+          "explanation": "Selective pressure allows resistant strains to proliferate, reducing future treatment options.",
+          "source_url": ""
+        },
+        {
+          "id": "med-013",
+          "type": "truefalse",
+          "claim": "Regular physical activity lowers the risk of cardiovascular disease.",
+          "truth": true,
+          "explanation": "Exercise improves blood pressure, lipid profiles, insulin sensitivity, and overall vascular health.",
+          "source_url": ""
+        },
+        {
+          "id": "med-014",
+          "type": "truefalse",
+          "claim": "People with Type 1 diabetes require insulin therapy to manage blood glucose.",
+          "truth": true,
+          "explanation": "Type 1 diabetes involves autoimmune destruction of pancreatic beta cells, necessitating exogenous insulin.",
+          "source_url": ""
+        },
+        {
+          "id": "med-015",
+          "type": "truefalse",
+          "claim": "Cigarette smoking significantly increases the risk of lung cancer.",
+          "truth": true,
+          "explanation": "Tobacco smoke contains carcinogens that cause DNA damage and promote malignant transformation.",
           "source_url": ""
         }
       ]
@@ -70,25 +262,121 @@
         {
           "id": "tech-001",
           "type": "truefalse",
-          "claim": "AI-generated images can always be spotted by the human eye.",
+          "claim": "Incognito mode hides your browsing from your ISP.",
           "truth": false,
-          "explanation": "Visual cues can help, but many AI images are indistinguishable without forensic tools, metadata, or watermarking.",
+          "explanation": "Private browsing prevents local history storage but does not conceal traffic from your employer or internet provider.",
           "source_url": ""
         },
         {
           "id": "tech-002",
           "type": "truefalse",
-          "claim": "Disabling location permissions means apps cannot track you at all.",
+          "claim": "Charging your phone overnight ruins the battery immediately.",
           "truth": false,
-          "explanation": "Apps may still infer behavior via network data, device fingerprints, or other signals. Permission controls reduce risk but don't guarantee anonymity.",
+          "explanation": "Modern devices manage charging to prevent continuous overcharge; long-term heat and cycles affect degradation, not a single overnight charge.",
           "source_url": ""
         },
         {
           "id": "tech-003",
           "type": "truefalse",
-          "claim": "A single viral post can permanently 'boost' an account so every future post goes viral.",
+          "claim": "Clearing your browser cookies once guarantees websites cannot track you afterwards.",
           "truth": false,
-          "explanation": "Platform algorithms weigh many signals per post. Past success doesn't guarantee future reach without ongoing engagement and quality.",
+          "explanation": "Websites can use many identifiers beyond cookies, such as IP, local storage, or device fingerprinting.",
+          "source_url": ""
+        },
+        {
+          "id": "tech-004",
+          "type": "truefalse",
+          "claim": "5G towers inherently cause phones to drain battery much faster even when idle.",
+          "truth": false,
+          "explanation": "Battery life depends on signal quality and device behavior; 5G itself is not a constant drain when idle.",
+          "source_url": ""
+        },
+        {
+          "id": "tech-005",
+          "type": "truefalse",
+          "claim": "End-to-end encryption lets platform employees read your private messages.",
+          "truth": false,
+          "explanation": "With true end-to-end encryption, only communicating devices hold keys; platforms can access metadata but not content.",
+          "source_url": ""
+        },
+        {
+          "id": "tech-006",
+          "type": "truefalse",
+          "claim": "If a photo is on the internet, it is legal to reuse it anywhere.",
+          "truth": false,
+          "explanation": "Online availability does not waive copyright; licensing or fair use applies case by case.",
+          "source_url": ""
+        },
+        {
+          "id": "tech-007",
+          "type": "truefalse",
+          "claim": "More megapixels always mean better image quality on phones.",
+          "truth": false,
+          "explanation": "Sensor size, optics, and processing often matter more than pixel count alone.",
+          "source_url": ""
+        },
+        {
+          "id": "tech-008",
+          "type": "truefalse",
+          "claim": "Turning on airplane mode completely disables all location tracking.",
+          "truth": false,
+          "explanation": "Some devices may still collect or infer location from cached data; airplane mode reduces radios but is not a privacy guarantee.",
+          "source_url": ""
+        },
+        {
+          "id": "tech-009",
+          "type": "truefalse",
+          "claim": "Private browsing mode hides your activity from your employer or ISP.",
+          "truth": false,
+          "explanation": "Incognito prevents local history but does not hide traffic from networks or providers.",
+          "source_url": ""
+        },
+        {
+          "id": "tech-010",
+          "type": "truefalse",
+          "claim": "Clearing app cache will permanently speed up your phone.",
+          "truth": false,
+          "explanation": "Cache clearing can free space temporarily; performance depends on broader factors like storage health, background processes, and OS updates.",
+          "source_url": ""
+        },
+        {
+          "id": "tech-011",
+          "type": "truefalse",
+          "claim": "Enabling multi-factor authentication reduces the risk of account takeover.",
+          "truth": true,
+          "explanation": "MFA adds an additional verification step so stolen passwords alone are insufficient.",
+          "source_url": ""
+        },
+        {
+          "id": "tech-012",
+          "type": "truefalse",
+          "claim": "Phishing emails often imitate trusted brands’ appearance to trick users into revealing credentials.",
+          "truth": true,
+          "explanation": "Attackers spoof logos, sender names, and layouts to increase credibility and click-throughs.",
+          "source_url": ""
+        },
+        {
+          "id": "tech-013",
+          "type": "truefalse",
+          "claim": "Using public Wi-Fi without HTTPS can expose sensitive data to interception.",
+          "truth": true,
+          "explanation": "Unencrypted traffic can be observed by others on the same network; HTTPS protects content in transit.",
+          "source_url": ""
+        },
+        {
+          "id": "tech-014",
+          "type": "truefalse",
+          "claim": "Keeping software updated helps patch known security vulnerabilities.",
+          "truth": true,
+          "explanation": "Vendors release fixes for CVEs; timely updates reduce the attack surface.",
+          "source_url": ""
+        },
+        {
+          "id": "tech-015",
+          "type": "truefalse",
+          "claim": "Using strong, unique passwords for each site lowers the risk from credential stuffing attacks.",
+          "truth": true,
+          "explanation": "Unique credentials prevent a breach on one platform from unlocking accounts elsewhere.",
           "source_url": ""
         }
       ]
