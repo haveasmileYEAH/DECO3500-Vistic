@@ -470,6 +470,10 @@ $(function(){
     $("#roomCodeText").text(currentRoom);
     const urlAud = audienceUrlFor(currentRoom);
     $("#joinUrl").text(urlAud).attr("href", urlAud);
+    
+    // ⭐ 生成二维码
+    drawQR("qrCanvas", urlAud);
+    
     socket.emit("getLeaderboard", currentRoom);
 
     try {
@@ -507,14 +511,38 @@ $(function(){
     loadBankOnce();
   });
 
-  // Live stats updates
+  // 🔧 修复：Live stats updates + 自动跳转逻辑
   socket.on("deliverData", (d)=>{
+    console.log("[P1] 📊 Received stats update:", d);
+    
+    // 更新统计数据显示
     $("#totalAnswers").text(d.totalAnswers||0);
     $("#correctAnswers").text(d.correctAnswers||0);
     $("#incorrectAnswers").text(d.incorrectAnswers||0);
     $("#correctUsers").text((d.correctUsers||[]).join(", ")||"—");
     $("#incorrectUsers").text((d.incorrectUsers||[]).join(", ")||"—");
     $("#correctAverage").text("%"+Math.round(Number(d.percentage)||0));
+    
+    // 🔧 自动跳转逻辑：如果有玩家回答了，立即停止倒计时并准备跳转
+    if (d.totalAnswers > 0) {
+      console.log("[P1] 🎯 Player answered! Stopping timer and preparing auto-advance...");
+      
+      // 立即清除倒计时定时器
+      if (autoAdvanceTimer) {
+        clearTimeout(autoAdvanceTimer);
+        autoAdvanceTimer = null;
+      }
+      
+      // 立即停止视觉倒计时
+      $("#timerBar").css("width", "0%");
+      $("#timer").text("✅ Player Answered!");
+      
+      // 等待3秒后自动跳转（给玩家看反馈和统计的时间）
+      autoAdvanceTimer = setTimeout(() => {
+        console.log("[P1] 🚀 Auto-advancing after player answer...");
+        autoAdvanceToNext();
+      }, 3000);
+    }
   });
   
   socket.on("leaderboard", (rows)=>{
@@ -525,18 +553,6 @@ $(function(){
     (rows||[]).forEach(r=>{
       $completionTb.append(`<tr><td>${r.rank}</td><td>${r.username}</td><td>${r.score}</td><td>${r.correctCount}</td><td>${r.avgTime}</td></tr>`);
     });
-  });
-  
-  // 监听玩家提交答案事件，触发自动跳转
-  socket.on("playerAnswered", ()=>{
-    console.log("[P1] Player answered, preparing to auto-advance...");
-    // 等待2秒后自动跳转（给玩家看反馈的时间）
-    if (autoAdvanceTimer) {
-      clearTimeout(autoAdvanceTimer);
-    }
-    autoAdvanceTimer = setTimeout(() => {
-      autoAdvanceToNext();
-    }, 2000);
   });
 
   // Street Challenge UI
