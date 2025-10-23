@@ -17,7 +17,7 @@
       }
     })();
   </script>
-  <!-- New Theme 2 code Load the new v2 CSS only when ?theme=v2 -->
+
 </head>
 <body>
   <div class="wrap">
@@ -34,22 +34,19 @@
       <div id="title" class="title">Loading title…</div>
       <div id="body" class="body">Loading body…</div>
     </div>
-
-    <!-- ⭐ 新增：二维码卡片 -->
     <div class="card" id="qrCard" style="display:none; margin-top:16px">
       <div class="row between" style="margin-bottom: 12px;">
-        <span class="chip">📱 Scan to Join as Audience</span>
+        <span class="chip">Scan to Join as Audience</span>
         <span id="qrRoomCode" class="code">—</span>
       </div>
       <div style="text-align: center; padding: 20px; background: #f9fafb; border-radius: 12px;">
         <img id="qrCanvas" width="200" height="200" style="display:inline-block; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" alt="QR Code" />
         <p style="margin-top: 16px; font-size: 14px; color: #64748b; font-weight: 500;">
-          📷 Scan with your phone to join as audience
+          Scan with your phone to join as audience
         </p>
       </div>
     </div>
 
-    <!-- 当前问题卡片 -->
     <div class="card" id="questionCard" style="display:none; margin-top:16px">
       <div class="row between">
         <span class="chip">Current Question</span>
@@ -68,7 +65,6 @@
       <span class="chip">Live Votes</span>
     </div>
     <div class="chart-container">
-      <!-- True 柱 -->
       <div class="chart-bar-wrapper">
         <div class="chart-label">👍 True</div>
         <div class="chart-bar-bg">
@@ -78,8 +74,6 @@
         </div>
         <div class="chart-count" id="countTrue">0 votes</div>
       </div>
-      
-      <!-- False 柱 -->
       <div class="chart-bar-wrapper">
         <div class="chart-label">👎 False</div>
         <div class="chart-bar-bg">
@@ -90,8 +84,6 @@
         <div class="chart-count" id="countFalse">0 votes</div>
       </div>
     </div>
-    
-    <!-- 统计信息 -->
     <div class="chart-stats" id="stat">
       Total: 0 votes | True: 0% | False: 0%
     </div>
@@ -113,11 +105,7 @@
       Example: <span id="example"></span>
     </div>
   </div>
-
-  <!-- 环境变量 -->
   <script src="/env.js"></script>
-
-  <!-- 轮询脚本 -->
   <script>
     setInterval(async function() {
       try {
@@ -162,20 +150,14 @@
             } else {
               timeLimit.textContent = '';
             }
-            
-            console.log('🔄 [Display] 问题已更新:', round.current_question.substring(0, 50) + '...');
           } else {
             questionCard.style.display = 'none';
           }
         }
-      } catch (e) {
-        console.error('❌ [Display] 刷新失败:', e);
-      }
+      } catch (e) {}
     }, 3000);
     
-    console.log('✅ [Display] 轮询已启动（每 3 秒）');
   </script>
-
   <script type="module" src="/js/display.js?v=3"></script>
 </body>
 </html>

@@ -18,7 +18,6 @@
       }
     })();
   </script>
-   <!-- New Theme 2 code Load the new v2 CSS only when ?theme=v2 -->
 </head>
 <body>
   <header class="site-header">
@@ -30,7 +29,6 @@
   </header>
 
   <main class="wrap">
-    <!-- ===== Step 1: Lobby (Join only) ===== -->
     <section id="lobby" class="card">
       <h2 class="card-title">Lobby</h2>
       <div class="form-grid">
@@ -42,21 +40,15 @@
         <p class="small muted">If opened via QR, the room may be pre-filled.</p>
       </div>
     </section>
-
-    <!-- ===== Step 2: Stage (visible after Join) ===== -->
     <section id="stage" class="hidden">
-      <!-- Waiting -->
       <section id="greeting" class="card">
         <h2 class="card-title">Waiting for the host…</h2>
         <div class="btn-row"><button id="exitOnline" class="btn">Back</button></div>
       </section>
-
-      <!-- Live Votes (Audience) -->
       <div class="card" id="voteChartCard" style="display:none; margin-top:16px;">
   <div class="vote-chart">
     <div class="chart-title">Live Voting Results</div>
     <div class="chart-container">
-      <!-- True 柱 -->
       <div class="chart-bar-wrapper">
         <div class="chart-label">👍 True</div>
         <div class="chart-bar-bg">
@@ -66,8 +58,6 @@
         </div>
         <div class="chart-count" id="countTrue">0 votes</div>
       </div>
-      
-      <!-- False 柱 -->
       <div class="chart-bar-wrapper">
         <div class="chart-label">👎 False</div>
         <div class="chart-bar-bg">
@@ -78,15 +68,11 @@
         <div class="chart-count" id="countFalse">0 votes</div>
       </div>
     </div>
-    
-    <!-- 统计信息 -->
     <div class="chart-stats" id="voteStats">
       Total: 0 votes | True: 0% | False: 0%
     </div>
   </div>
 </div>
-
-      <!-- Live · Short Answer -->
       <section id="shortAnswer" class="card hidden">
         <h2 class="card-title">
           Live · Short Answer
@@ -103,8 +89,6 @@
           </div>
         </form>
       </section>
-
-      <!-- Live · True / False -->
       <section id="trueOrFalse" class="card hidden">
         <h2 class="card-title">
           Live · True / False
@@ -124,21 +108,16 @@
           </div>
         </form>
       </section>
-
-      <!-- Feedback -->
       <section id="feedbackCard" class="card hidden">
         <h2 class="card-title">Result</h2>
         <div id="result" class="badge">—</div>
         <p id="answertext" class="muted">—</p>
       </section>
-
-      <!-- ⭐ 新增：Completion Card -->
       <section id="completionCard" class="card hidden completion-card">
         <div class="completion-header">
           <h1 class="completion-title">🎉 Quiz Completed!</h1>
           <p id="completionMsg" class="completion-message">Congratulations! You have completed the quiz!</p>
         </div>
-
         <div class="card" style="margin-top:20px; background: #fff;">
           <h2 class="card-title">🏆 Final Leaderboard</h2>
           <div class="table-wrap">
@@ -163,12 +142,9 @@
       </section>
     </section>
   </main>
-
-  <!-- libs -->
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
   <script src="/env.js"></script>
-  <!-- module -->
   <script type="module" src="/js/player2.js"></script>
 </body>
 </html>

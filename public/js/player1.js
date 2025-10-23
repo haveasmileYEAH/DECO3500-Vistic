@@ -1,27 +1,23 @@
-// Player 1 (Host): Auto-advance mode with question preview + Supabase sync
-// Questions auto-advance when: (1) player submits OR (2) timer ends
+// Player 1 (Host)
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const socket = io();
 let currentRoom = "";
-let autoAdvanceTimer = null; // 自动跳转计时器
+let autoAdvanceTimer = null;
 window.currentRoom = ""; 
 
-/* ====================== helpers ====================== */
 function genCode(n=6){
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let s = ""; for (let i=0;i<n;i++) s += chars[Math.floor(Math.random()*chars.length)];
   return s;
 }
 
-// ⭐ 修复：生成 Audience URL（不是 player2）
 function audienceUrlFor(room){
   const u = new URL(window.location.origin + "/audience");
   u.searchParams.set("code", room);
   return u.toString();
 }
 
-// ⭐ 使用 Google Charts API 生成二维码（无需外部库）
 function drawQR(canvasId, text){
   const img = document.getElementById(canvasId);
   if (!img) {
@@ -30,12 +26,11 @@ function drawQR(canvasId, text){
   }
   
   console.log('[P1] Generating QR Code for:', text);
-  
-  // 使用 QR Server API（更可靠）
+
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(text)}`;
   
   img.onload = () => {
-    console.log('[P1] ✅ QR Code loaded successfully');
+    console.log('QR Code loaded successfully');
   };
   
   img.onerror = () => {
@@ -60,8 +55,6 @@ function startCountdown(seconds){
   let total = Number(seconds)||0, left = total;
   const bar = $("#timerBar"), text = $("#timer");
   bar.css("width", "100%"); text.text(total? total+" sec": "");
-  
-  // 清除之前的自动跳转计时器
   if (autoAdvanceTimer) {
     clearTimeout(autoAdvanceTimer);
     autoAdvanceTimer = null;
@@ -78,12 +71,11 @@ function startCountdown(seconds){
     bar.css("width", Math.floor(left/total*100)+"%"); 
     text.text(left+" sec");
   },1000);
-  
-  // 设置自动跳转：倒计时结束后3秒自动下一题
+
   autoAdvanceTimer = setTimeout(() => {
     console.log("[P1] Timer ended, auto-advancing to next question...");
     autoAdvanceToNext();
-  }, (total + 3) * 1000); // 题目时间 + 3秒缓冲
+  }, (total + 3) * 1000);
 }
 
 function autoAdvanceToNext(){
@@ -94,10 +86,8 @@ function autoAdvanceToNext(){
   const total = (cat.questions || []).length;
   
   if (used.size >= total) {
-    // 所有题目完成
     showCompletionPage();
   } else {
-    // 继续下一题
     nextQuestion();
   }
 }
@@ -109,13 +99,11 @@ function renderLeaderboard(rows){
   });
 }
 
-/* ====================== Supabase: live votes + question sync ====================== */
 const SB_URL  = window.SUPABASE_URL;
 const SB_ANON = window.SUPABASE_ANON_KEY;
 const sb = (SB_URL && SB_ANON) ? createClient(SB_URL, SB_ANON) : null;
 window.sb = sb;
 let voteChannel = null;
-
 const statEl = document.getElementById('voteStat1');
 const barEl  = document.getElementById('voteBarUp1');
 
@@ -128,6 +116,7 @@ async function refreshVotes(){
   if (statEl) statEl.textContent = `👍 ${up} | 👎 ${down} (${pct}% up)`;
   if (barEl)  barEl.style.width = pct + '%';
 }
+
 function subscribeVotes(){
   if (!sb) return;
   if (voteChannel) { sb.removeChannel(voteChannel); voteChannel = null; }
@@ -138,7 +127,6 @@ function subscribeVotes(){
   refreshVotes();
 }
 
-/* ⭐ 新增：更新当前问题到 Supabase（让 audience 和 display 看到） */
 async function updateQuestionInSupabase(questionData) {
   if (!sb || !currentRoom) {
     console.warn('[P1] Supabase not available or no room set');
@@ -167,7 +155,7 @@ async function updateQuestionInSupabase(questionData) {
         current_question_total: qTotal || null
       })
       .eq('code', currentRoom)
-      .select(); // 添加 select() 来返回更新后的数据
+      .select();
     
     if (error) {
       console.error('[P1] Failed to update question in Supabase:', error);
@@ -180,7 +168,6 @@ async function updateQuestionInSupabase(questionData) {
   }
 }
 
-/* ⭐ 新增：清除当前问题（问题结束或测验完成时） */
 async function clearCurrentQuestion() {
   if (!sb || !currentRoom) return;
   
@@ -201,21 +188,19 @@ async function clearCurrentQuestion() {
     if (error) {
       console.error('[P1] Failed to clear question:', error);
     } else {
-      console.log('[P1] ✅ Question cleared in Supabase');
+      console.log('Question cleared in Supabase');
     }
   } catch (e) {
     console.error('[P1] Exception clearing question:', e);
   }
 }
 
-/* ====================== Street Challenge: Question Bank ====================== */
 const BANK_URLS = [ "/data/questions.json", "./data/questions.json", "/questions.json" ];
 let BANK = null;
 let BANK_MAP = new Map();
 let currentCategory = "";
 let USED = new Map();
 let Q_COUNTER = new Map();
-
 async function fetchFirstOk(urls){
   let lastErr;
   for (const u of urls){
@@ -248,7 +233,7 @@ async function loadBankOnce(){
       $sel.val(currentCategory);
       resetCategoryProgress(currentCategory);
       updateCategoryInfo();
-      renderBankTable(); // 显示题目列表
+      renderBankTable();
     } else {
       alert("Question bank loaded, but no categories found.");
     }
@@ -282,7 +267,6 @@ function renderBankTable(){
   });
 }
 
-/* === progress & picking === */
 function resetCategoryProgress(catId){
   USED.set(catId, new Set());
   Q_COUNTER.set(catId, 0);
@@ -311,7 +295,6 @@ function updateCategoryInfo(){
     categoryInfoEl.textContent = `Total questions: ${total} | Remaining: ${remaining}`;
   }
   
-  // 更新开始按钮状态
   const startBtn = document.getElementById('startQuiz');
   if (startBtn) {
     const hasStarted = (Q_COUNTER.get(currentCategory) || 0) > 0;
@@ -338,7 +321,6 @@ function pickRandomUnseen(catId){
   return { idx, q: cat.questions[idx], total };
 }
 
-/* === push & numbering === */
 function resolveTimeLimitFor(q){
   const fromInput = Number($("#bankTime").val() || 0);
   if (fromInput > 0) return fromInput;
@@ -352,19 +334,15 @@ async function pushBankQuestionWithIndex(idx){
   if (!cat) return alert("No category selected.");
   const q = (cat.questions || [])[idx];
   if (!q) return;
-
   const used = USED.get(currentCategory) || new Set();
   used.add(idx); 
   USED.set(currentCategory, used);
-
   const shown = (Q_COUNTER.get(currentCategory) || 0) + 1;
   Q_COUNTER.set(currentCategory, shown);
-
   const total = (cat.questions || []).length;
   updateQuestionCounter(currentCategory);
   updateCategoryInfo();
-  renderBankTable(); // 更新题目列表显示状态
-
+  renderBankTable();
   const payload = {
     room: currentRoom,
     question: q.claim || "",
@@ -379,10 +357,7 @@ async function pushBankQuestionWithIndex(idx){
 
   show("gameSummary");
   
-  // 1️⃣ 发送给 Player2（通过 Socket.IO）
   socket.emit("submitquestion", payload);
-  
-  // 2️⃣ ⭐ 同步到 Supabase（让 audience 和 display 看到）
   await updateQuestionInSupabase({
     question: payload.question,
     questionType: payload.questionType,
@@ -390,45 +365,32 @@ async function pushBankQuestionWithIndex(idx){
     qNumber: payload.qNumber,
     qTotal: payload.qTotal
   });
-  
   startCountdown(payload.timeLimit);
 }
 
 async function showCompletionPage(){
-  // 清除自动跳转计时器
   if (autoAdvanceTimer) {
     clearTimeout(autoAdvanceTimer);
     autoAdvanceTimer = null;
   }
-  
-  // ⭐ 修复：不立即清除问题，让 audience/display 继续看到最后一题
-  // 延迟清除，或者完全不清除
+
   console.log('[P1] Quiz completed, keeping last question visible');
-  // await clearCurrentQuestion(); // 注释掉立即清除
-  
-  // 可选：60秒后自动清除
+
   setTimeout(async () => {
     await clearCurrentQuestion();
-    console.log('[P1] ✅ Question cleared after completion delay');
+    console.log('Question cleared after completion delay');
   }, 60000);
-  
   hide("gameSummary");
   show("completionPage");
-  
   const cat = BANK_MAP.get(currentCategory);
   const catName = cat ? cat.name : currentCategory;
   const total = (cat?.questions?.length || 0);
-  
   const titleEl = document.getElementById('completionTitle');
   const messageEl = document.getElementById('completionMessage');
   
   if (titleEl) titleEl.textContent = `🎉 Quiz Completed!`;
   if (messageEl) messageEl.textContent = `Congratulations! You have completed all ${total} questions in the "${catName}" category!`;
-  
-  // 显示最终排行榜
   socket.emit("getLeaderboard", currentRoom);
-  
-  // 通知所有 Player2 测验已完成
   socket.emit("quizComplete", {
     room: currentRoom,
     categoryName: catName,
@@ -439,7 +401,6 @@ async function showCompletionPage(){
 function nextQuestion(){
   if (!currentRoom) return alert("Apply room first");
   if (!currentCategory) return alert("Please choose a category.");
-  
   const pick = pickRandomUnseen(currentCategory);
   if (!pick.q){
     showCompletionPage();
@@ -448,14 +409,11 @@ function nextQuestion(){
   pushBankQuestionWithIndex(pick.idx);
 }
 
-/* ====================== DOM ready ====================== */
 $(function(){
-  // Lobby: generate default code
   const $room = $("#roomCode");
   $room.val(genCode());
   $("#genRoom").on("click", ()=> $room.val(genCode()));
 
-  // Apply -> enter Stage
   $("#applyRoom").on("click", async ()=>{
     const r = ($room.val()||"").trim().toUpperCase();
     if(!r) return alert("Enter room code");
@@ -470,12 +428,8 @@ $(function(){
     $("#roomCodeText").text(currentRoom);
     const urlAud = audienceUrlFor(currentRoom);
     $("#joinUrl").text(urlAud).attr("href", urlAud);
-    
-    // ⭐ 生成二维码
     drawQR("qrCanvas", urlAud);
-    
     socket.emit("getLeaderboard", currentRoom);
-
     try {
       if (sb) {
         const payload = { 
@@ -495,7 +449,7 @@ $(function(){
           console.error('[P1] upsert rounds error:', error.message); 
           alert('Failed to create/update round: ' + error.message); 
         } else {
-          console.log('[P1] ✅ Round created/updated in Supabase');
+          console.log('Round created/updated in Supabase');
         }
       } else {
         console.warn('[P1] Supabase client not ready. Check /env.js');
@@ -503,7 +457,6 @@ $(function(){
     } catch (e) {
       console.error('[P1] upsert rounds exception:', e);
     }
-
     subscribeVotes();
     window.dispatchEvent(new CustomEvent("room-code-updated", { detail: { code: currentRoom } }));
 
@@ -511,33 +464,23 @@ $(function(){
     loadBankOnce();
   });
 
-  // 🔧 修复：Live stats updates + 自动跳转逻辑
   socket.on("deliverData", (d)=>{
-    console.log("[P1] 📊 Received stats update:", d);
-    
-    // 更新统计数据显示
+    console.log("Received stats update:", d);
     $("#totalAnswers").text(d.totalAnswers||0);
     $("#correctAnswers").text(d.correctAnswers||0);
     $("#incorrectAnswers").text(d.incorrectAnswers||0);
     $("#correctUsers").text((d.correctUsers||[]).join(", ")||"—");
     $("#incorrectUsers").text((d.incorrectUsers||[]).join(", ")||"—");
     $("#correctAverage").text("%"+Math.round(Number(d.percentage)||0));
-    
-    // 🔧 自动跳转逻辑：如果有玩家回答了，立即停止倒计时并准备跳转
     if (d.totalAnswers > 0) {
       console.log("[P1] 🎯 Player answered! Stopping timer and preparing auto-advance...");
-      
-      // 立即清除倒计时定时器
       if (autoAdvanceTimer) {
         clearTimeout(autoAdvanceTimer);
         autoAdvanceTimer = null;
       }
-      
-      // 立即停止视觉倒计时
+
       $("#timerBar").css("width", "0%");
-      $("#timer").text("✅ Player Answered!");
-      
-      // 等待3秒后自动跳转（给玩家看反馈和统计的时间）
+      $("#timer").text("Player Answered!");
       autoAdvanceTimer = setTimeout(() => {
         console.log("[P1] 🚀 Auto-advancing after player answer...");
         autoAdvanceToNext();
@@ -547,22 +490,16 @@ $(function(){
   
   socket.on("leaderboard", (rows)=>{
     renderLeaderboard(rows);
-    // 同时更新完成页面的排行榜
     const $completionTb = $("#completionLeaderboard tbody"); 
     $completionTb.empty();
     (rows||[]).forEach(r=>{
       $completionTb.append(`<tr><td>${r.rank}</td><td>${r.username}</td><td>${r.score}</td><td>${r.correctCount}</td><td>${r.avgTime}</td></tr>`);
     });
   });
-
-  // Street Challenge UI
   loadBankOnce();
-  
-  // Category change
   $("#bankCategory").on("change", async function(){
     const newCategory = $(this).val();
     const hasStarted = (Q_COUNTER.get(currentCategory) || 0) > 0;
-    
     if (hasStarted) {
       const confirmChange = confirm("Changing category will reset the current quiz. Continue?");
       if (!confirmChange) {
@@ -577,25 +514,17 @@ $(function(){
     renderBankTable();
     hide("gameSummary");
     hide("completionPage");
-    
-    // ⭐ 清除当前问题（切换类别时应该清除）
     await clearCurrentQuestion();
   });
-  
-  // Start Quiz button
   $("#startQuiz").on("click", function(){
     if (!currentRoom) return alert("Apply room first");
     nextQuestion();
   });
-  
-  // New Round button
   $("#newRound").on("click", async function(){
     hide("completionPage");
     resetCategoryProgress(currentCategory);
     updateCategoryInfo();
     renderBankTable();
-    
-    // ⭐ 清除当前问题（新回合时应该清除）
     await clearCurrentQuestion();
   });
 });

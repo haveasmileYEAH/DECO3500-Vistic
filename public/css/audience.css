@@ -1,4 +1,3 @@
-/* ==================== 基础样式 ==================== */
 body {
   font-family: system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
   margin: 0;
@@ -7,7 +6,6 @@ body {
   color: #0f172a;
 }
 
-/* 电脑版：居中显示，最大宽度 */
 @media (min-width: 769px) {
   body {
     max-width: 720px;
@@ -15,7 +13,6 @@ body {
   }
 }
 
-/* 手机版：全宽显示 */
 @media (max-width: 768px) {
   body {
     padding: 12px;
@@ -30,8 +27,6 @@ body {
 .muted {
   color: #64748b;
 }
-
-/* ==================== 卡片样式 ==================== */
 .card {
   border: 1px solid #e5e7eb;
   border-radius: 14px;
@@ -41,7 +36,6 @@ body {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-/* 手机版：减少内边距 */
 @media (max-width: 768px) {
   .card {
     padding: 10px;
@@ -49,7 +43,6 @@ body {
   }
 }
 
-/* ==================== 行布局 ==================== */
 .row {
   display: flex;
   gap: 8px;
@@ -57,7 +50,6 @@ body {
   flex-wrap: wrap;
 }
 
-/* 手机版：垂直排列按钮 */
 @media (max-width: 768px) {
   .row button {
     flex: 1;
@@ -65,7 +57,6 @@ body {
   }
 }
 
-/* ==================== 表单元素 ==================== */
 input, select, button {
   padding: 10px 12px;
   border: 1px solid #cbd5e1;
@@ -74,15 +65,14 @@ input, select, button {
   font-size: 14px;
 }
 
-/* 手机版：更大的触摸目标 */
 @media (max-width: 768px) {
   input, select, button {
     padding: 12px 14px;
-    font-size: 16px; /* 防止 iOS 自动缩放 */
+    font-size: 16px;
   }
   
   button {
-    min-height: 44px; /* iOS 推荐的最小触摸目标 */
+    min-height: 44px;
   }
 }
 
@@ -95,14 +85,12 @@ button:active {
   transform: scale(0.98);
 }
 
-/* ==================== 标题样式 ==================== */
 .title {
   font-size: 20px;
   font-weight: 700;
   margin-bottom: 8px;
 }
 
-/* 手机版：更小的标题 */
 @media (max-width: 768px) {
   .title {
     font-size: 18px;
@@ -115,7 +103,6 @@ button:active {
   line-height: 1.6;
 }
 
-/* ==================== 进度条 ==================== */
 .bar {
   height: 10px;
   background: #e5e7eb;
@@ -123,7 +110,6 @@ button:active {
   overflow: hidden;
 }
 
-/* 手机版：更粗的进度条 */
 @media (max-width: 768px) {
   .bar {
     height: 12px;
@@ -136,7 +122,6 @@ button:active {
   transition: width 0.3s ease;
 }
 
-/* ==================== 标签样式 ==================== */
 .pill {
   font-size: 12px;
   padding: 2px 6px;
@@ -153,17 +138,15 @@ button:active {
   color: #9f1239;
 }
 
-/* ==================== 列表样式 ==================== */
 .list {
   list-style: none;
   padding: 0;
   margin: 0;
   max-height: 220px;
   overflow: auto;
-  -webkit-overflow-scrolling: touch; /* iOS 平滑滚动 */
+  -webkit-overflow-scrolling: touch;
 }
 
-/* 手机版：更高的列表 */
 @media (max-width: 768px) {
   .list {
     max-height: 180px;
@@ -183,7 +166,6 @@ button:active {
   color: #94a3b8;
 }
 
-/* ==================== 问题显示样式 ==================== */
 .question-header {
   display: flex;
   justify-content: space-between;
@@ -205,7 +187,6 @@ button:active {
   white-space: nowrap;
 }
 
-/* 手机版：更大的徽章 */
 @media (max-width: 768px) {
   .badge {
     padding: 6px 12px;
@@ -224,7 +205,6 @@ button:active {
   line-height: 1.6;
 }
 
-/* 手机版：更大的问题文字 */
 @media (max-width: 768px) {
   .question-text {
     font-size: 16px;
@@ -233,7 +213,6 @@ button:active {
   }
 }
 
-/* ==================== 投票按钮样式 ==================== */
 #up, #down {
   flex: 1;
   font-weight: 600;
@@ -260,7 +239,6 @@ button:active {
   background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
 }
 
-/* 手机版：全宽按钮 */
 @media (max-width: 768px) {
   #up, #down {
     font-size: 16px;
@@ -268,7 +246,6 @@ button:active {
   }
 }
 
-/* ==================== 输入框优化 ==================== */
 #codeInput {
   text-transform: uppercase;
   font-family: monospace;
@@ -277,7 +254,6 @@ button:active {
   letter-spacing: 2px;
 }
 
-/* 手机版：更宽的输入框 */
 @media (max-width: 768px) {
   #codeInput {
     flex: 1 1 auto;
@@ -289,13 +265,11 @@ button:active {
   flex: 1;
 }
 
-/* ==================== 统计信息 ==================== */
 #stat {
   white-space: nowrap;
   font-weight: 600;
 }
 
-/* 手机版：统计信息换行 */
 @media (max-width: 768px) {
   #stat {
     flex-basis: 100%;
@@ -304,7 +278,6 @@ button:active {
   }
 }
 
-/* ==================== 深色模式支持（可选） ==================== */
 @media (prefers-color-scheme: dark) {
   body {
     background: #0f172a;
@@ -333,7 +306,6 @@ button:active {
   }
 }
 
-/* ==================== 横屏手机优化 ==================== */
 @media (max-width: 768px) and (orientation: landscape) {
   body {
     padding: 8px;
@@ -348,14 +320,12 @@ button:active {
   }
 }
 
-/* ==================== 平板设备优化 ==================== */
 @media (min-width: 769px) and (max-width: 1024px) {
   body {
     max-width: 600px;
   }
 }
 
-/* ==================== 大屏幕优化 ==================== */
 @media (min-width: 1025px) {
   body {
     max-width: 800px;
@@ -367,7 +337,6 @@ button:active {
   }
 }
 
-/* ==================== 柱状图样式 ==================== */
 .vote-chart {
   margin-top: 8px;
 }
@@ -391,7 +360,6 @@ button:active {
   min-height: 200px;
 }
 
-/* 手机版：垂直排列 */
 @media (max-width: 768px) {
   .chart-container {
     gap: 16px;
@@ -415,7 +383,6 @@ button:active {
   color: #1e293b;
 }
 
-/* 手机版：更小的标签 */
 @media (max-width: 768px) {
   .chart-label {
     font-size: 14px;
@@ -434,7 +401,6 @@ button:active {
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
 }
 
-/* 手机版：更矮的柱子 */
 @media (max-width: 768px) {
   .chart-bar-bg {
     height: 120px;
@@ -466,7 +432,6 @@ button:active {
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-/* 手机版：更小的数值 */
 @media (max-width: 768px) {
   .chart-value {
     font-size: 16px;
@@ -491,14 +456,12 @@ button:active {
   border-radius: 8px;
 }
 
-/* 手机版：更小的统计文字 */
 @media (max-width: 768px) {
   .chart-stats {
     font-size: 12px;
   }
 }
 
-/* 动画效果 */
 @keyframes barGrow {
   from {
     height: 0%;

@@ -4,8 +4,6 @@
   <meta charset="utf-8"/>
   <title>Street Challenge – Audience Vote</title>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <!-- ❌ 删除 meta refresh，使用 JavaScript 轮询代替 -->
-  <!-- <meta http-equiv="refresh" content="5"> -->
   <link href="/css/audience.css" rel="stylesheet">
 
   <!-- New Theme 2 code Load the new v2 CSS only when ?theme=v2 -->
@@ -20,12 +18,9 @@
       }
     })();
   </script>
-
-  <!-- New Theme 2 code Load the new v2 CSS only when ?theme=v2 -->
-
 </head>
 <body>
-  <h1>Street Challenge – Audience</h1>
+  <h1>Street Challenge - Audience</h1>
 
   <div class="card">
     <div class="row">
@@ -41,7 +36,6 @@
     <div id="body" class="body"></div>
   </div>
 
-  <!-- 新增：当前问题卡片 -->
   <div class="card" id="questionCard" style="display:none">
     <div class="question-header">
       <span class="badge">Current Question</span>
@@ -57,11 +51,9 @@
     <button id="down">👎 Believe False</button>
   </div>
   
-  <!-- ⭐ 新增：柱状图 -->
   <div class="vote-chart">
     <div class="chart-title">Live Voting Results</div>
     <div class="chart-container">
-      <!-- True 柱 -->
       <div class="chart-bar-wrapper">
         <div class="chart-label">👍 True</div>
         <div class="chart-bar-bg">
@@ -71,8 +63,6 @@
         </div>
         <div class="chart-count" id="countTrue">0 votes</div>
       </div>
-      
-      <!-- False 柱 -->
       <div class="chart-bar-wrapper">
         <div class="chart-label">👎 False</div>
         <div class="chart-bar-bg">
@@ -84,7 +74,6 @@
       </div>
     </div>
     
-    <!-- 统计信息 -->
     <div class="chart-stats" id="stat">
       Total: 0 votes | True: 0% | False: 0%
     </div>
@@ -98,11 +87,7 @@
     </div>
     <ul id="messages" class="list"></ul>
   </div>
-
-  <!-- ⭐ 环境变量（必须在最前面） -->
   <script src="/env.js"></script>
-
-  <!-- ⭐ 简单的轮询方案（不依赖 audience.js） -->
   <script>
     setInterval(async function() {
       try {
@@ -124,8 +109,6 @@
         const data = await response.json();
         if (data && data[0]) {
           const round = data[0];
-          
-          // 更新问题显示
           const questionCard = document.getElementById('questionCard');
           const currentQuestion = document.getElementById('currentQuestion');
           const qNumber = document.getElementById('qNumber');
@@ -141,21 +124,13 @@
             
             const qType = round.current_question_type === 'short' ? 'Short Answer' : 'True / False';
             questionType.textContent = `Type: ${qType}`;
-            
-            console.log('🔄 [Audience] 问题已更新:', round.current_question.substring(0, 50) + '...');
           } else {
             questionCard.style.display = 'none';
           }
         }
-      } catch (e) {
-        console.error('❌ [Audience] 刷新失败:', e);
-      }
-    }, 3000); // 每 3 秒检查一次
-    
-    console.log('✅ [Audience] 轮询已启动（每 3 秒）');
+      } catch (e) {}
+    }, 3000);
   </script>
-
-  <!-- ⭐ audience.js -->
   <script type="module" src="/js/audience.js?v=3"></script>
 </body>
 </html>

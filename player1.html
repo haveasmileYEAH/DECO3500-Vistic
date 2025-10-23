@@ -34,7 +34,6 @@
   </header>
 
   <main class="wrap">
-    <!-- ===== Step 1: Lobby ===== -->
     <section id="lobby" class="card">
       <h2 class="card-title">Lobby</h2>
       <div class="form-grid">
@@ -47,50 +46,38 @@
         <p class="small muted">After Apply, you will enter the stage to choose questions and monitor audience support.</p>
       </div>
     </section>
-
-    <!-- ===== Step 2: Stage ===== -->
     <section class="card">
       <h2 class="card-title">Share</h2>
       <div>
         <p class="small">Current code: <b id="roomCodeText">—</b></p>
       </div>
     </section>
-
-      <!-- Live Votes -->
-      <section class="card">
-        <h2 class="card-title">Live Votes</h2>
-        <div class="between">
-          <span class="muted small">Real-time votes from Audience</span>
-          <span id="voteStat1" class="small">👍 0 | 👎 0 (0% up)</span>
+    <section class="card">
+      <h2 class="card-title">Live Votes</h2>
+      <div class="between">
+        <span class="muted small">Real-time votes from Audience</span>
+        <span id="voteStat1" class="small">👍 0 | 👎 0 (0% up)</span>
+      </div>
+      <div class="bar" style="margin-top:8px">
+        <div id="voteBarUp1" class="up" style="width:0%"></div>
+      </div>
+    </section>
+    <section class="card" id="bankCard">
+      <h2 class="card-title">Street Challenge - Auto Mode</h2>
+      <div class="form-grid">
+        <label class="label">Select Category</label>
+        <select id="bankCategory" class="input" style="max-width:300px"></select>
+        <label class="label">Time Limit (sec)</label>
+        <input id="bankTime" type="number" class="input" min="5" value="30" style="max-width:120px"/>
+        <p id="categoryInfo" class="small muted">—</p>
+        <div class="btn-row">
+          <button id="startQuiz" class="btn btn-primary">Start Quiz</button>
         </div>
-        <div class="bar" style="margin-top:8px">
-          <div id="voteBarUp1" class="up" style="width:0%"></div>
-        </div>
-      </section>
-
-      <!-- Street Challenge (Question Preview) -->
-      <section class="card" id="bankCard">
-        <h2 class="card-title">Street Challenge - Auto Mode</h2>
-        <div class="form-grid">
-          <label class="label">Select Category</label>
-          <select id="bankCategory" class="input" style="max-width:300px"></select>
-
-          <label class="label">Time Limit (sec)</label>
-          <input id="bankTime" type="number" class="input" min="5" value="30" style="max-width:120px"/>
-
-          <p id="categoryInfo" class="small muted">—</p>
-
-          <div class="btn-row">
-            <button id="startQuiz" class="btn btn-primary">Start Quiz</button>
-          </div>
-
-          <p class="small muted">
-            📋 Questions will be randomly selected automatically. 
+        <p class="small muted">
+            Questions will be randomly selected automatically. 
             The quiz will advance to the next question when a player submits or time runs out.
-          </p>
-        </div>
-
-        <!-- Question Preview Table -->
+        </p>
+      </div>
         <div class="table-wrap" style="margin-top:16px">
           <h3 class="small" style="margin-bottom:8px; color: var(--muted)">Question Preview (Read-only)</h3>
           <table class="table" id="bankTable">
@@ -106,8 +93,6 @@
           </table>
         </div>
       </section>
-
-      <!-- Summary & Leaderboard (During Quiz) -->
       <section id="gameSummary" class="card hidden">
         <h2 class="card-title">
           Live Summary & Leaderboard 
@@ -137,8 +122,6 @@
           </table>
         </div>
       </section>
-
-      <!-- Completion Page -->
       <section id="completionPage" class="card hidden completion-card">
         <div class="completion-header">
           <h1 id="completionTitle" class="completion-title">🎉 Quiz Completed!</h1>
@@ -146,7 +129,7 @@
         </div>
 
         <div class="card" style="margin-top:20px">
-          <h2 class="card-title">🏆 Final Leaderboard</h2>
+          <h2 class="card-title">Final Leaderboard</h2>
           <div class="table-wrap">
             <table id="completionLeaderboard" class="table">
               <thead><tr><th>#</th><th>Name</th><th>Score</th><th>Correct</th><th>Avg(s)</th></tr></thead>
@@ -161,13 +144,10 @@
       </section>
     </section>
   </main>
-
-  <!-- libs -->
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   <script src="/env.js"></script>
-  <!-- module -->
   <script type="module" src="/js/player1.js"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-/* Player 2 (Student) — Light theme, online-only */
+/* Player 2 (Student) — Light theme*/
 
 :root {
   --bg: #f6f7fb;
@@ -11,7 +11,9 @@
 }
 
 * { box-sizing: border-box; }
+
 html, body { height: 100%; }
+
 body {
   margin: 0;
   background: var(--bg);
@@ -24,16 +26,21 @@ body {
   background: #fff;
   border-bottom: 1px solid var(--border);
 }
+
 .brand { display:flex; align-items:center; gap:10px; padding:10px 16px; }
+
 .logo {
   width:28px; height:28px; border-radius:8px;
   background: linear-gradient(135deg,#93c5fd,#a78bfa);
   display:inline-grid; place-items:center; color:#fff; font-weight:700;
 }
+
 .title { font-weight:700; letter-spacing:.2px; }
+
 .role { margin-left:auto; color: var(--muted) }
 
 .wrap { max-width: 720px; margin: 24px auto; padding: 0 16px; }
+
 .card {
   background: var(--card);
   border: 1px solid var(--border);
@@ -42,11 +49,15 @@ body {
   margin-bottom: 16px;
   box-shadow: 0 8px 20px rgba(0,0,0,.05);
 }
+
 .card-title { margin: 0 0 12px; font-size: 18px; font-weight: 700; }
 
 .hidden { display: none !important; }
+
 .muted { color: var(--muted); }
+
 .small { font-size: 12px; }
+
 .mono { font-family: var(--mono); }
 
 .input, .btn, .progress {
@@ -65,13 +76,19 @@ body {
   padding: 10px 12px; cursor: pointer;
 }
 .btn:hover { background: #f3f4f6; }
+
 .btn-primary { background: var(--primary); color: #fff; border-color: transparent; }
+
 .btn-primary:hover { filter: brightness(.96); }
 
 .form-grid { display:grid; gap: 10px; }
+
 .label { color: var(--muted); font-size: 12px; letter-spacing: .2px; }
+
 .radio-row { display:flex; gap:18px; align-items:center; }
+
 .radio input { transform: translateY(1px); }
+
 .btn-row { display:flex; gap:10px; flex-wrap: wrap; }
 
 .qtext {
@@ -83,7 +100,9 @@ body {
 }
 
 .progress { height: 8px; background:#f3f4f6; overflow:hidden; }
+
 .progress-bar { height: 8px; width:0%; background: linear-gradient(90deg,#60a5fa,#a78bfa); transition: width .3s; }
+
 .timer-text { margin-top:6px; color: var(--muted); }
 
 .badge {
@@ -91,15 +110,12 @@ body {
   background:#eef2ff; color:#3730a3; border: 1px solid #e0e7ff;
 }
 
-/* votes bar */
 .bar{height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden}
 .up{height:100%;background:#10b981;transition:width .2s}
 
-/* responsive */
 @media (max-width: 480px){
   .wrap { max-width: 100%; }
 }
-/* Player 2 (Student) – Light theme, online-only */
 
 :root {
   --bg: #f6f7fb;
@@ -112,7 +128,9 @@ body {
 }
 
 * { box-sizing: border-box; }
+
 html, body { height: 100%; }
+
 body {
   margin: 0;
   background: var(--bg);
@@ -125,16 +143,21 @@ body {
   background: #fff;
   border-bottom: 1px solid var(--border);
 }
+
 .brand { display:flex; align-items:center; gap:10px; padding:10px 16px; }
+
 .logo {
   width:28px; height:28px; border-radius:8px;
   background: linear-gradient(135deg,#93c5fd,#a78bfa);
   display:inline-grid; place-items:center; color:#fff; font-weight:700;
 }
+
 .title { font-weight:700; letter-spacing:.2px; }
+
 .role { margin-left:auto; color: var(--muted) }
 
 .wrap { max-width: 720px; margin: 24px auto; padding: 0 16px; }
+
 .card {
   background: var(--card);
   border: 1px solid var(--border);
@@ -143,11 +166,15 @@ body {
   margin-bottom: 16px;
   box-shadow: 0 8px 20px rgba(0,0,0,.05);
 }
+
 .card-title { margin: 0 0 12px; font-size: 18px; font-weight: 700; }
 
 .hidden { display: none !important; }
+
 .muted { color: var(--muted); }
+
 .small { font-size: 12px; }
+
 .mono { font-family: var(--mono); }
 
 .input, .btn, .progress {
@@ -159,20 +186,28 @@ body {
   width: 100%; background: #ffffff; color: var(--text);
   padding: 10px 12px; outline: none;
 }
+
 .input:focus { border-color: #c3d3ff; box-shadow: 0 0 0 3px rgba(37, 99, 235, .12); }
 
 .btn {
   background: #f9fafb; color: var(--text);
   padding: 10px 12px; cursor: pointer;
 }
+
 .btn:hover { background: #f3f4f6; }
+
 .btn-primary { background: var(--primary); color: #fff; border-color: transparent; }
+
 .btn-primary:hover { filter: brightness(.96); }
 
 .form-grid { display:grid; gap: 10px; }
+
 .label { color: var(--muted); font-size: 12px; letter-spacing: .2px; }
+
 .radio-row { display:flex; gap:18px; align-items:center; }
+
 .radio input { transform: translateY(1px); }
+
 .btn-row { display:flex; gap:10px; flex-wrap: wrap; }
 
 .qtext {
@@ -192,13 +227,11 @@ body {
   background:#eef2ff; color:#3730a3; border: 1px solid #e0e7ff;
 }
 
-/* votes bar */
 .bar{height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden}
 .up{height:100%;background:#10b981;transition:width .2s}
 .row { display: flex; align-items: center; }
 .between { justify-content: space-between; }
 
-/* ⭐ Completion Card Styles */
 .completion-card {
   background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
   border: 2px solid #a78bfa;
@@ -223,18 +256,20 @@ body {
   margin: 0;
 }
 
-/* Table styles for leaderboard */
 .table-wrap { overflow: auto; margin-top: 12px; }
+
 .table { 
   width: 100%; 
   border-collapse: collapse; 
   background: #fff;
 }
+
 .table th, .table td { 
   border-bottom: 1px solid var(--border); 
   padding: 10px; 
   text-align: left;
 }
+
 .table thead th { 
   color: var(--muted); 
   font-weight: 600; 
@@ -242,24 +277,21 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
+
 .table tbody tr:hover {
   background: #f9fafb;
 }
 
-/* responsive */
 @media (max-width: 480px){
   .wrap { max-width: 100%; }
-  
   .completion-title {
     font-size: 24px;
   }
-  
   .completion-message {
     font-size: 14px;
   }
 }
 
-/* ==================== 柱状图样式 ==================== */
 .vote-chart {
   margin-top: 8px;
 }

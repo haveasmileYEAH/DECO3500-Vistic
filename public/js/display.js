@@ -9,7 +9,6 @@ if (!url || !anon) {
 }
 const supabase = createClient(url, anon)
 
-// ⭐ 生成 Audience URL
 function audienceUrlFor(room){
   const host = window.location.host;
   const protocol = window.location.protocol;
@@ -18,7 +17,6 @@ function audienceUrlFor(room){
   return u.toString();
 }
 
-// ⭐ 生成二维码
 function generateQRCode(roomCode){
   const qrCanvas = document.getElementById('qrCanvas');
   const qrCard = document.getElementById('qrCard');
@@ -32,11 +30,10 @@ function generateQRCode(roomCode){
   const audienceUrl = audienceUrlFor(roomCode);
   console.log('[display] Generating QR Code for:', audienceUrl);
   
-  // 使用 QR Server API
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(audienceUrl)}`;
   
   qrCanvas.onload = () => {
-    console.log('[display] ✅ QR Code loaded successfully');
+    console.log('QR Code loaded successfully');
     qrCard.style.display = 'block';
     qrRoomCode.textContent = roomCode;
   };
@@ -50,7 +47,6 @@ function generateQRCode(roomCode){
   qrCanvas.src = qrUrl;
 }
 
-// DOM Elements
 const codeEl   = document.getElementById('codeEl')
 const titleEl  = document.getElementById('title')
 const bodyEl   = document.getElementById('body')
@@ -63,14 +59,12 @@ const codeInput= document.getElementById('codeInput')
 const applyBtn = document.getElementById('apply')
 const example  = document.getElementById('example')
 
-// 问题相关元素
 const questionCard = document.getElementById('questionCard')
 const currentQuestion = document.getElementById('currentQuestion')
 const qNumber = document.getElementById('qNumber')
 const questionType = document.getElementById('questionType')
 const timeLimit = document.getElementById('timeLimit')
 
-// State
 const params = new URLSearchParams(location.search)
 let code = (params.get('code') || '').toUpperCase()
 codeInput.value = code
@@ -80,7 +74,6 @@ let channel = null
 let pollTimer = null
 let lastMsgTime = null
 
-// Helper Functions
 function escapeHtml(s){ 
   return String(s).replace(/[&<>"']/g, c => ({
     '&':'&amp;',
@@ -91,7 +84,6 @@ function escapeHtml(s){
   }[c])) 
 }
 
-// Set Code and Initialize
 function setCode(c){
   code = (c||'').toUpperCase()
   codeEl.textContent = code || '———'
@@ -102,7 +94,6 @@ function setCode(c){
     titleEl.textContent = 'Enter a round code to start display.'
     bodyEl.textContent = ''
     questionCard.style.display = 'none'
-    // ⭐ 隐藏二维码卡片
     const qrCard = document.getElementById('qrCard');
     if (qrCard) qrCard.style.display = 'none';
     return 
@@ -112,12 +103,10 @@ function setCode(c){
   loadRound().then(()=>{
     subscribe()
     startPolling()
-    // ⭐ 生成二维码
     generateQRCode(code)
   })
 }
 
-// Stop Realtime Subscriptions
 function stopRealtime(){
   if (pollTimer){ 
     clearInterval(pollTimer)
@@ -129,7 +118,6 @@ function stopRealtime(){
   }
 }
 
-// Load Round Data
 async function loadRound(){
   const { data: r, error } = await supabase
     .from('rounds')
@@ -159,14 +147,12 @@ async function loadRound(){
     truthEl.className = r.truth ? 'truth' : 'false'
   }
   
-  // 显示当前问题
   updateCurrentQuestion(r)
   
   await refreshVotes()
   await loadMessages({ initial:true })
 }
 
-// Update Current Question Display
 function updateCurrentQuestion(round){
   if (!round) {
     console.warn('[display] updateCurrentQuestion called with no data')
@@ -208,7 +194,6 @@ function updateCurrentQuestion(round){
   }
 }
 
-// Refresh Vote Counts
 async function refreshVotes(){
   if(!code) return
   
@@ -221,12 +206,8 @@ async function refreshVotes(){
   const up = data?.up || 0
   const down = data?.down || 0
   const total = up + down
-  
-  // 计算百分比
   const truePct = total ? Math.round((up / total) * 100) : 0
   const falsePct = total ? Math.round((down / total) * 100) : 0
-  
-  // 更新柱状图
   const barTrue = document.getElementById('barTrue')
   const barFalse = document.getElementById('barFalse')
   const valueTrue = document.getElementById('valueTrue')
@@ -251,7 +232,6 @@ async function refreshVotes(){
   console.log('[display] Vote chart updated:', { up, down, truePct, falsePct })
 }
 
-// Add Message to List
 function addMsg(m){
   const li = document.createElement('li')
   li.className = 'li'
@@ -259,7 +239,6 @@ function addMsg(m){
   text.innerHTML = escapeHtml(m.content)
   li.appendChild(text)
   msgList.appendChild(li)
-  
   if (m.created_at) {
     if (!lastMsgTime || new Date(m.created_at) > new Date(lastMsgTime)) {
       lastMsgTime = m.created_at
@@ -267,7 +246,6 @@ function addMsg(m){
   }
 }
 
-// Load Messages
 async function loadMessages({ initial=false } = {}){
   if(!code) return
   
@@ -297,7 +275,6 @@ async function loadMessages({ initial=false } = {}){
   if (m && m.length) msgList.scrollTop = msgList.scrollHeight
 }
 
-// Subscribe to Realtime Changes
 function subscribe(){
   if(channel){ 
     supabase.removeChannel(channel)
@@ -335,8 +312,6 @@ function subscribe(){
           truthEl.textContent=`Truth: ${r.truth ? 'TRUE':'FALSE'}`
           truthEl.className=r.truth?'truth':'false'
         }
-        
-        // 更新当前问题
         updateCurrentQuestion(r)
       }
     )
@@ -345,7 +320,6 @@ function subscribe(){
     })
 }
 
-// Start Polling for Updates
 function startPolling(){
   if (pollTimer) clearInterval(pollTimer)
   
@@ -355,7 +329,6 @@ function startPolling(){
   }, 5000)
 }
 
-// Page Visibility Change Handler
 document.addEventListener('visibilitychange', ()=>{
   if (document.visibilityState === 'visible') {
     refreshVotes()
@@ -363,7 +336,6 @@ document.addEventListener('visibilitychange', ()=>{
   }
 })
 
-// Apply Button Handler
 applyBtn.onclick = ()=>{
   const val = (codeInput.value || '').trim().toUpperCase()
   if(!val) return
@@ -376,7 +348,6 @@ applyBtn.onclick = ()=>{
   history.replaceState(null,'',u)
 }
 
-// Initialize
 if(code) {
   console.log('[display] Initializing with code:', code)
   setCode(code)

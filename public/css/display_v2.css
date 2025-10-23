@@ -12,7 +12,6 @@
   --shadow:0 10px 30px rgba(0,0,0,.35);
 }
 
-/* Base */
 html,body{height:100%}
 body{
   margin:0;
@@ -21,7 +20,6 @@ body{
   font:16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans";
 }
 
-/* Layout & cards */
 .wrap{ max-width:1120px; margin:24px auto; padding:0 16px }
 .grid{ display:grid; gap:16px }
 .grid.cols-2{ grid-template-columns:1fr 1fr }
@@ -37,7 +35,6 @@ body{
 .card-title{ margin:0 0 12px; font-size:20px; font-weight:800 }
 .section-title{ margin:6px 0 12px; font-size:16px; font-weight:700; color:var(--muted) }
 
-/* Utils */
 .hidden{display:none!important}
 .muted{color:var(--muted)}
 .small{font-size:12px}
@@ -47,7 +44,6 @@ body{
 .row{display:flex;align-items:center;gap:10px}
 .between{display:flex;align-items:center;justify-content:space-between;gap:10px}
 
-/* Inputs / buttons */
 .input, .btn{
   background:#160f2a;
   color:var(--text);
@@ -72,23 +68,19 @@ body{
 .badge.success{ background:rgba(34,197,94,.15); color:#dcfce7; border-color:rgba(34,197,94,.35)}
 .badge.warn{ background:rgba(239,68,68,.15); color:#fee2e2; border-color:rgba(239,68,68,.35) }
 
-/* Stats */
 .stats{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px }
 .stat{ background:#170f2c; border:1px solid var(--border); border-radius:12px; padding:14px; text-align:center }
 .stat-value{ font-size:28px; font-weight:800 }
 .stat-label{ color:var(--muted); font-size:12px }
 
-/* Progress / timers */
 .progress{ height:10px; background:#2a1c4d; overflow:hidden; border-radius:999px }
 .progress-bar{ height:100%; width:0%; background:linear-gradient(90deg,#60a5fa,#a78bfa); transition:width .3s }
 .timer-text{ margin-top:6px; color:var(--muted) }
 
-/* Vote bars */
 .bar{ height:12px; background:#2a1c4d; border-radius:999px; overflow:hidden }
 .up{ height:100%; background:linear-gradient(90deg,#22c55e,#60a5fa); transition:width .25s }
 .down{ height:100%; background:#ef4444; transition:width .25s }
 
-/* Tables */
 .table-wrap{ overflow:auto }
 .table{ width:100%; border-collapse:collapse }
 .table th,.table td{ padding:12px; border-bottom:1px solid var(--border) }
@@ -96,25 +88,20 @@ body{
 .table tbody tr:hover{ background:#150f27 }
 .table .num{ font-family:var(--mono); text-align:right }
 
-/* Messages */
 .msg{ background:#170f2c; border:1px solid var(--border); border-radius:12px; padding:12px }
 .msg .meta{ color:var(--muted); font-size:12px; margin-bottom:6px }
 .msg .text{ white-space:pre-wrap }
 
-/* Lists used in display.html */
 .list{ list-style:none; padding:0; margin:0; max-height:220px; overflow:auto }
 .li{ padding:6px 0; border-bottom:1px solid rgba(255,255,255,.08); font-size:14px; display:flex; gap:8px }
 
-/* Story */
 .story{ background:#170f2c; border:1px solid var(--border); border-radius:12px; padding:14px }
 .story h3{ margin:0 0 8px; font-size:18px }
 .story p{ margin:0; color:var(--text) }
 
-/* QR/code box */
 .code-box{ display:grid; place-items:center; background:#170f2c; border:1px dashed var(--border); border-radius:12px; padding:12px }
 .code{ font-family:var(--mono); letter-spacing:1px; font-weight:700; font-size:18px }
 
-/* Question box */
 .question-box{
   margin-top:12px; padding:16px;
   background:linear-gradient(135deg, rgba(96,165,250,.16) 0%, rgba(167,139,250,.16) 100%);
@@ -123,10 +110,8 @@ body{
   font-size:20px; font-weight:700; color:#e5e7ff; line-height:1.6;
 }
 
-/* Footer */
 .footer{ text-align:center; color:var(--muted); font-size:12px }
 
-/* Responsive */
 @media (max-width:1024px){
   .grid.cols-3{ grid-template-columns:1fr 1fr }
   .stats{ grid-template-columns:repeat(2,minmax(0,1fr)) }

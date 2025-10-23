@@ -1,4 +1,3 @@
-// server.js
 const express = require('express');
 const app = express();
 const http = require('http').Server(app);
@@ -9,21 +8,13 @@ require('dotenv').config();
 
 const PORT = process.env.PORT || 3000;
 const PERMANENT_ROOM_CODE = (process.env.PERM_ROOM || 'LEARN01').trim().toUpperCase();
-
-// 静态资源：public 下的 /css 与 /js 会自动启用（/css/..., /js/...）
 app.use(express.static(path.join(__dirname, 'public')));
-
-// HTML 页面
 app.get('/player1', (req, res) => res.sendFile(path.join(__dirname, 'player1.html')));
 app.get('/player2', (req, res) => res.sendFile(path.join(__dirname, 'player2.html')));
 app.get('/display',  (req, res) => res.sendFile(path.join(__dirname, 'display.html')));
 app.get('/audience', (req, res) => res.sendFile(path.join(__dirname, 'audience.html')));
-
-// 旧路径重定向
 app.get('/teacher', (req, res) => res.redirect(302, '/player1'));
 app.get('/student', (req, res) => res.redirect(302, '/player2'));
-
-// 向前端注入 Supabase 环境变量（仅 display/audience 用）
 app.get('/env.js', (req, res) => {
   const url  = String(process.env.NEXT_PUBLIC_SUPABASE_URL || '');
   const anon = String(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '');
@@ -32,7 +23,6 @@ app.get('/env.js', (req, res) => {
   );
 });
 
-// 简易 CSV 导出（仅当配置了 SERVICE_ROLE_KEY 且建好表时可用）
 app.get('/api/export', async (req, res) => {
   try {
     const code = (req.query.code || '').toString().trim().toUpperCase();
@@ -66,8 +56,6 @@ app.get('/api/export', async (req, res) => {
 });
 
 
-// ----------------- 课堂/玩家逻辑 -----------------
-
 const DATA_DIR = path.join(__dirname, 'data');
 const QFILE = path.join(DATA_DIR, 'questions.json');
 function ensureDataFile() {
@@ -93,7 +81,7 @@ function getRoom(r) {
       currentQ: null,
       stats: { correct: 0, incorrect: 0, usersCorrect: [], usersIncorrect: [] },
       practice: new Map(),
-      answeredUsers: new Set() // 追踪已答题用户
+      answeredUsers: new Set()
     });
   }
   return rooms.get(r);
@@ -198,8 +186,7 @@ io.on('connection', (socket) => {
       qTotal: qTotal || null
     };
     state.stats = { correct: 0, incorrect: 0, usersCorrect: [], usersIncorrect: [] };
-    state.answeredUsers = new Set(); // 重置已答题用户
-    
+    state.answeredUsers = new Set();
     io.to(r).emit('deliverquestion', {
       question, 
       questionType, 
@@ -225,7 +212,6 @@ io.on('connection', (socket) => {
       return;
     }
 
-    // 检查是否已经答过题
     if (state.answeredUsers.has(user)) {
       io.to(socket.id).emit('resultquestion', {
         correct: false, 
@@ -251,10 +237,7 @@ io.on('connection', (socket) => {
     if (isCorrect) rec.correctCount += 1;
     if (elapsed != null) rec.totalTime += Math.max(0, Math.floor(elapsed/1000));
     state.scores.set(user, rec);
-
-    // 标记该用户已答题
     state.answeredUsers.add(user);
-
     if (isCorrect) {
       state.stats.correct += 1;
       if (!state.stats.usersCorrect.includes(user)) state.stats.usersCorrect.push(user);
@@ -280,22 +263,18 @@ io.on('connection', (socket) => {
     });
 
     io.to(r).emit('leaderboard', computeLeaderboard(state.scores));
-
-    // 通知房间内的 Player1 有玩家提交了答案（用于自动跳转）
     io.to(r).emit('playerAnswered', {
       username: user,
       totalAnswered: state.answeredUsers.size
     });
   });
 
-  // 新增：测验完成事件
   socket.on('quizComplete', (data) => {
     const { room, categoryName, totalQuestions } = data || {};
     if (!room) return;
     const r = room.trim().toUpperCase();
     const state = getRoom(r);
-    
-    // 广播测验完成事件给房间内所有人
+
     io.to(r).emit('quizCompleted', {
       categoryName: categoryName || 'Unknown',
       totalQuestions: totalQuestions || 0,

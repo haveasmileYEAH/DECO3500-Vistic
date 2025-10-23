@@ -1,29 +1,30 @@
 // public/js/player2.js
-// Player 2: Two-step UI (Lobby -> Stage), receive questions, answer, feedback
-// Robust socket init (lazy) + optional Supabase votes (dynamic import)
 
-let socket = null;        // lazy-inited
+let socket = null; 
 let username = "", room = "";
 let onlineTimer1 = null, onlineTimer2 = null;
-let voteRefreshTimer = null; // ⭐ 添加投票刷新定时器
+let voteRefreshTimer = null;
 
-/* ============== helpers ============== */
 function parseQuery(name){
   try { return new URL(window.location.href).searchParams.get(name) || ""; }
   catch { return ""; }
 }
+
 function show(id){ 
   const el = document.getElementById(id);
   if (el) el.classList.remove("hidden");
 }
+
 function hide(id){ 
   const el = document.getElementById(id);
   if (el) el.classList.add("hidden");
 }
+
 function clearOnlineTimers(){
   if (onlineTimer1) { clearInterval(onlineTimer1); onlineTimer1 = null; }
   if (onlineTimer2) { clearInterval(onlineTimer2); onlineTimer2 = null; }
 }
+
 function startTimer(barId, textId, seconds){
   let total = Number(seconds)||0, left = total;
   const $bar = $("#"+barId), $text = $("#"+textId);
@@ -35,7 +36,6 @@ function startTimer(barId, textId, seconds){
   return t;
 }
 
-/* ============== Socket (lazy) ============== */
 function ensureSocket() {
   if (socket && socket.connected) return true;
   if (typeof io !== "function") {
@@ -44,12 +44,10 @@ function ensureSocket() {
     return false;
   }
   try {
-    socket = io(); // connect to same origin
-    // basic diagnostics
+    socket = io();
     socket.on("connect", ()=> console.log("[P2] socket connected:", socket.id));
     socket.on("connect_error", (err)=> console.error("[P2] connect_error:", err?.message || err));
     socket.on("disconnect", (r)=> console.warn("[P2] socket disconnected:", r));
-    // re-register listeners after (re)connect if needed (we add once below too)
     attachSocketListeners();
     return true;
   } catch (e) {
@@ -59,7 +57,6 @@ function ensureSocket() {
   }
 }
 
-/* ============== Supabase votes (optional) ============== */
 let sb = null;
 let voteChannel = null;
 
@@ -74,14 +71,12 @@ async function initSupabase(){
       sb = createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
     }
   } catch (e) {
-    // votes disabled silently if CDN blocked
   }
 }
 
-// ⭐ 刷新投票柱状图
 async function refreshVotes(){
   if (!sb || !room) return;
-  
+
   try {
     const { data, error } = await sb.rpc('get_vote_counts', { p_round_code: room });
     if (error) {
@@ -92,12 +87,8 @@ async function refreshVotes(){
     const up = data?.up || 0;
     const down = data?.down || 0;
     const total = up + down;
-    
-    // 计算百分比
     const truePct = total ? Math.round((up / total) * 100) : 0;
     const falsePct = total ? Math.round((down / total) * 100) : 0;
-    
-    // 更新柱状图
     const voteChartCard = document.getElementById('voteChartCard');
     const barTrue = document.getElementById('barTrue');
     const barFalse = document.getElementById('barFalse');
@@ -106,8 +97,6 @@ async function refreshVotes(){
     const countTrue = document.getElementById('countTrue');
     const countFalse = document.getElementById('countFalse');
     const voteStats = document.getElementById('voteStats');
-    
-    // 显示图表卡片
     if (voteChartCard && total > 0) {
       voteChartCard.style.display = 'block';
     }
@@ -131,7 +120,6 @@ async function refreshVotes(){
   }
 }
 
-// ⭐ 启动投票刷新定时器
 function startVoteRefresh(){
   if (voteRefreshTimer) {
     clearInterval(voteRefreshTimer);
@@ -144,7 +132,6 @@ function startVoteRefresh(){
   console.log('[P2] Vote refresh timer started');
 }
 
-// ⭐ 停止投票刷新定时器
 function stopVoteRefresh(){
   if (voteRefreshTimer) {
     clearInterval(voteRefreshTimer);
@@ -163,20 +150,16 @@ function subscribeVotes(){
   refreshVotes();
 }
 
-/* ============== Socket listeners (idempotent) ============== */
 let listenersAttached = false;
 function attachSocketListeners(){
   if (!socket || listenersAttached) return;
   listenersAttached = true;
-
-  // Receive question
   socket.on("deliverquestion", (msg)=>{
     hide("greeting");
-    hide("completionCard"); // 隐藏完成卡片
+    hide("completionCard");
 
     const n = (msg.qNumber ?? null), t = (msg.qTotal ?? null);
     const qText = (n && t) ? `Q ${n} / ${t}` : "Q — / —";
-    
     const qNo2aEl = document.getElementById('qNo2a');
     if (qNo2aEl) qNo2aEl.textContent = qText;
     
@@ -191,12 +174,9 @@ function attachSocketListeners(){
       clearOnlineTimers(); onlineTimer2 = startTimer("sTimerBar2","timer2", msg.timeLimit);
     }
     hide("feedbackCard"); $("#result").text("—"); $("#answertext").text("");
-    
-    // ⭐ 收到问题后刷新投票图表
     refreshVotes();
   });
 
-  // Feedback
   socket.on("resultquestion", (msg)=>{
     show("feedbackCard");
     if (msg.blank) $("#result").text("No answer submitted");
@@ -204,7 +184,6 @@ function attachSocketListeners(){
     $("#answertext").text("Correct answer: " + (msg.answer||""));
   });
 
-  // ⭐ 新增：监听测验完成事件
   socket.on("quizCompleted", (data)=>{
     console.log("[P2] Quiz completed!", data);
     clearOnlineTimers();
@@ -213,24 +192,17 @@ function attachSocketListeners(){
     hide("feedbackCard");
     hide("greeting");
     show("completionCard");
-    
-    // 更新完成信息
     const msgEl = document.getElementById('completionMsg');
     if (msgEl && data.categoryName) {
       msgEl.textContent = `Congratulations! You have completed all ${data.totalQuestions || ''} questions in the "${data.categoryName}" category!`;
     }
-    
-    // 更新排行榜
     if (data.leaderboard && Array.isArray(data.leaderboard)) {
       renderCompletionLeaderboard(data.leaderboard);
     }
   });
-
-  // Optional: ignore leaderboard on student side
   socket.on("leaderboard", ()=>{ /* no-op */ });
 }
 
-/* ============== Render completion leaderboard ============== */
 function renderCompletionLeaderboard(rows){
   const $tb = $("#completionLeaderboard tbody");
   $tb.empty();
@@ -239,50 +211,39 @@ function renderCompletionLeaderboard(rows){
   });
 }
 
-/* ============== DOM ready ============== */
 $(async function(){
   await initSupabase();
 
-  // Prefill from QR (?room= / ?code=)
   const autoRoom = (parseQuery("room")||parseQuery("code")||"").toUpperCase();
   if (autoRoom) $("#roomInput").val(autoRoom);
 
-  // Join -> switch UI: Lobby -> Stage
   $("#joinBtn").on("click", ()=>{
     username = ($("#username").val()||"Anonymous").trim();
     room = ($("#roomInput").val()||"").trim().toUpperCase();
     if (!room) return alert("Enter room code");
-
-    if (!ensureSocket()) return; // don't proceed without socket
-
-    // Join room via socket
+    if (!ensureSocket()) return;
     socket.emit("join", room);
     console.log("[P2] emitted join:", room);
 
-    // UI
     hide("lobby");
     show("stage");
     show("greeting");
     show("voteCard");
 
-    // Votes (safe if sb == null)
     subscribeVotes();
-    
-    // ⭐ 启动投票刷新定时器
     startVoteRefresh();
   });
 
   // Exit -> back to Lobby
   $("#exitOnline, #exitOnline2, #exitOnline3").on("click", function(){
     clearOnlineTimers();
-    stopVoteRefresh(); // ⭐ 停止投票刷新
+    stopVoteRefresh();
     hide("shortAnswer"); hide("trueOrFalse"); hide("greeting");
     hide("feedbackCard"); hide("voteCard"); hide("completionCard");
     show("lobby");
     if (voteChannel && sb) { sb.removeChannel(voteChannel); voteChannel = null; }
   });
 
-  // Submit answers
   $("#shortanswers").on("submit", function(){
     const ans = ($("#answer").val() || "").trim();
     if (!ans) { alert("Please enter an answer before submitting."); return false; }

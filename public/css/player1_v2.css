@@ -1,8 +1,5 @@
-/* ------------------------------
-   Player 1 – V2 (Dark Purple Theme)
----------------------------------*/
+/*Player 1 – V2 (Dark Purple Theme)*/
 
-/* GLOBAL RESET */
 body, html {
   margin: 0;
   padding: 0;
@@ -12,7 +9,6 @@ body, html {
   height: 100%;
 }
 
-/* TOP BAR */
 .topbar {
   display: flex;
   justify-content: space-between;
@@ -33,7 +29,6 @@ body, html {
 .brand {font-size:1.2rem;font-weight:600;}
 .role {font-size:.9rem;opacity:.8;}
 
-/* LAYOUT */
 .shell {
   display:flex;
   flex-direction:row;
@@ -45,7 +40,6 @@ body, html {
 .col-left {flex:3;overflow-y:auto;}
 .col-right {flex:1.4;}
 
-/* CARD */
 .card {
   background:#1b0b2d;
   border:1px solid #2e114d;
@@ -57,7 +51,6 @@ body, html {
 .card__head h2 {margin:0;font-size:1.1rem;}
 .hidden{display:none!important;}
 
-/* BUTTONS */
 .btn {
   background:#3b0ca1;
   color:#fff;
@@ -71,7 +64,6 @@ body, html {
 .btn--primary{background:#8000ff;}
 .btn--primary:hover{background:#9b38ff;}
 
-/* INPUTS & SELECT */
 .input {
   background:#210a38;
   border:1px solid #3a185d;
@@ -86,7 +78,6 @@ body, html {
 .min-48{min-height:48px;}
 .lbl{font-size:.85rem;opacity:.8;}
 
-/* CATEGORY GRID */
 .category-grid {
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
@@ -104,7 +95,6 @@ body, html {
 }
 .cat:hover{background:#4c2190;}
 
-/* TABLES */
 .table-wrap{overflow-x:auto;}
 .table {
   width:100%;
@@ -118,7 +108,6 @@ body, html {
 }
 .table th{background:#2c1349;font-weight:600;}
 
-/* STATS */
 .stats {
   display:flex;
   justify-content:space-between;
@@ -135,7 +124,6 @@ body, html {
 .stat__value{font-size:1.2rem;font-weight:700;}
 .stat__label{font-size:.75rem;opacity:.7;}
 
-/* TIMER */
 .progress {
   background:#31185a;
   border-radius:8px;
@@ -150,7 +138,6 @@ body, html {
   transition:width 0.2s linear;
 }
 
-/* VOTE BAR */
 .vote-bar {
   background:#2d104f;
   height:14px;
@@ -165,11 +152,9 @@ body, html {
   transition:width .3s ease;
 }
 
-/* COMPLETION */
 .completion__head{text-align:center;margin:1rem 0;}
 .actions{text-align:center;margin-top:1rem;}
 
-/* COMPAT SHIMS (old class names) */
 .progress-bar{background:#9b38ff;height:100%;}
 .up{background:linear-gradient(90deg,#38ff8a,#00ffcc);}
 .card-title{color:#fff;}

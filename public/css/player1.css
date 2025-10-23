@@ -21,7 +21,6 @@ body {
   font: 14px/1.5 system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans";
 }
 
-/* Header */
 .site-header {
   position: sticky; top: 0; z-index: 10;
   background: #fff;
@@ -36,7 +35,6 @@ body {
 .title { font-weight:700; letter-spacing:.2px; }
 .role { margin-left:auto; color: var(--muted) }
 
-/* Layout & cards */
 .wrap { max-width: 980px; margin: 24px auto; padding: 0 16px; }
 .card {
   background: var(--card);
@@ -85,7 +83,6 @@ body {
 .btn.warn { background: var(--warn); color: #fff; border-color: transparent; }
 .btn.success { background: var(--success); color: #fff; border-color: transparent; }
 
-/* Room / QR */
 .room-grid { display:grid; grid-template-columns: 1fr 180px; gap: 16px; align-items: start; }
 .room-row { display:flex; gap:8px; }
 .room-input { text-transform: uppercase; font-family: var(--mono); }
@@ -95,7 +92,6 @@ body {
   background: #f9fafb; border: 1px dashed #d1d5db; border-radius: 12px; height: 180px;
 }
 
-/* Forms & lists */
 .form-grid { display:grid; gap: 10px; }
 .label { color: var(--muted); font-size: 12px; letter-spacing: .2px; }
 
@@ -104,13 +100,11 @@ body {
 
 .btn-row { display:flex; gap:10px; flex-wrap: wrap; }
 
-/* Table / leaderboard */
 .table-wrap { overflow: auto; }
 .table { width: 100%; border-collapse: collapse; }
 .table th, .table td { border-bottom: 1px solid var(--border); padding: 10px; }
 .table thead th { color: var(--muted); font-weight: 600; }
 
-/* Stats */
 .stats { display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; }
 .stat {
   background:#ffffff; border:1px solid var(--border); border-radius: 12px;
@@ -119,7 +113,6 @@ body {
 .stat-value { font-size: 22px; font-weight: 700; }
 .stat-label { color: var(--muted); font-size: 12px; }
 
-/* Timers & votes */
 .progress { height: 8px; background:#f3f4f6; overflow:hidden; }
 .progress-bar { height: 8px; width:0%; background: linear-gradient(90deg,#60a5fa,#a78bfa); transition: width .3s; }
 .timer-text { margin-top:6px; color: var(--muted); }
@@ -127,7 +120,6 @@ body {
 .bar{height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden}
 .up{height:100%;background:#10b981;transition:width .2s}
 
-/* Completion Card Styles */
 #completionCard {
   background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
   border: 2px solid var(--success);
@@ -145,7 +137,6 @@ body {
   color: var(--text);
 }
 
-/* Category Info */
 #categoryInfo {
   padding: 8px 12px;
   background: #f9fafb;
@@ -154,7 +145,6 @@ body {
   font-weight: 500;
 }
 
-/* Responsive */
 .lists {
   display:grid; grid-template-columns: 1fr 1fr; gap: 10px;
 }
@@ -181,7 +171,8 @@ body {
     align-items: flex-start;
   }
 }
-/* Question Table Status Badges */
+
+
 .badge-used {
   display: inline-block;
   padding: 4px 8px;
@@ -207,7 +198,6 @@ body {
   background: #f9fafb;
 }
 
-/* Completion Page Styles */
 .completion-card {
   background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
   border: 2px solid #a78bfa;
@@ -232,7 +222,6 @@ body {
   margin: 0;
 }
 
-/* Responsive adjustments */
 @media (max-width: 720px){
   .completion-title {
     font-size: 24px;
