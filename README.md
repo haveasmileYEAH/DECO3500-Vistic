@@ -74,7 +74,7 @@ if install successfully, the above commands will print:
 # Installation & Setup
 After you successfully finish the Node.js Installation steps, use the command to install the dependents:
 
-npm install
+npm ci
 
 After you successfully finish install the dependents, you will see:
 
