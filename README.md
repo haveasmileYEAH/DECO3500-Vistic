@@ -1,7 +1,21 @@
 # VISTIC - TRUTHQUEST: Community Based Fake News Verification.
 
+## Table of Contents
+- [Introduction](#introduction)
+- [Project Tech Stack](#project-tech-stack)
+- [Prerequisites – TRUTHQUEST Setup](#prerequisites--truthquest-setup)
+- [Node.js Installation](#nodejs-installation)
+- [Installation & Setup](#installation--setup)
+  - [1. Connect with the Supabase.](#1-connect-with-the-supabase)
+  - [2. Run project code](#2-run-project-code)
+  - [3. Use the localhost to run the game](#3-use-the-localhost-to-run-the-game)
+  - [4. Use the IPv4 address to run the game](#4-use-the-ipv4-address-to-run-the-game)
+  - [4. Run the Game by Localhost or IPv4](#4-run-the-game-by-localhost-or-ipv4)
+- [Directory Tree](#directory-tree)
+- [License](#license)
+
 ---
-## 📘 Introduction 
+## Introduction 
 Welcome to the source code for Team VISTIC, developed for Social and Mobile Computing (DECO3500).
 
 We proudly present our project: TRUTHQUEST - A community based fake news verification street challenge program, a web-based system designed to provide a simulated environment for the creation of fake news and its resulting impacts to the university students.
@@ -13,14 +27,14 @@ We aim to simulate an experience where Player1 users act as fake news creators, 
 For specific design concepts, sources of inspiration, and other design details, please refer to GitWiki.
 
 ---
-## 🛠️ Project Tech Stack
+## Project Tech Stack
 **Frontend**: HTML5, CSS3, JavaScript
 **Backend**: server.js, Node.js
 **Database**: Supabase (Postgres + RLS + Realtime)
 **Development Tools**: GitHub, WhatsApp, Discord, Visual Studio Code
 
 ---
-# ⚙️ Prerequisites – TRUTHQUEST Setup
+# Prerequisites – TRUTHQUEST Setup
 
 Before setting up the project, ensure you have the following installed:
 
@@ -30,7 +44,7 @@ Before setting up the project, ensure you have the following installed:
 
 ---
 
-## 🛠️ Node.js Installation
+## Node.js Installation
 
 You only need to choose one method to set up your environment; we recommend trying “1. Quick Install” first. If you encounter difficulties installing Node, you can directly use “2. The Docker method provided on the official website”.
 
@@ -57,7 +71,7 @@ if install successfully, the above commands will print:
 
 ---
 
-# 🔧 Installation & Setup
+# Installation & Setup
 After you successfully finish the Node.js Installation steps, use the command to install the dependents:
 
 npm install
@@ -161,6 +175,6 @@ DECO3500-Vistic/
 ```
 
 ---
-## 📄 License
+## License
 
 This is a university capstone project. Not intended for commercial use.
