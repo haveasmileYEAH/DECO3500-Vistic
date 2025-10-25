@@ -138,25 +138,22 @@ Display: http://172.20.10.5:3000/display?code=XXXXXX
 
 # Directory Tree
 DECO3500-Vistic/
-│
-├── node_modules/            # Socket Dependencies
-│
-├── public/                  # Main project info (js, css files, question data)          
-│   ├── css/                 # css files
-│   ├── data/                # question data
-│   ├── js/                  # JavaScript files
-│
-├── .gitignore               # Files/folders to exclude from Git
-├── .env                     # Files/folders to exclude from Git (Provide upon assignment submission)
-├── audience.html            # audience.html code
-├── display.html             # display.html code
-├── package-lock.json        # The “manifest file” of a Node.js project
-├── package.json             # Automatically generated lock file by npm
-├── player1.html             # player1.html code
-├── player2.html             # player2.html code
-├── README.md                # Project documentation
-├── schema.sql               # SQL commands for create the database
-└── server.js                # Backend main service file for the application
+├─ node_modules/               # Socket dependencies
+├─ public/
+│  ├─ css/                     # css files
+│  ├─ data/                    # question data
+│  └─ js/                      # JavaScript files
+├─ .gitignore                  # Git ignore rules
+├─ .env.example                # sample env (do NOT commit .env)
+├─ audience.html               # audience page
+├─ display.html                # display page
+├─ package.json
+├─ package-lock.json
+├─ player1.html
+├─ player2.html
+├─ README.md
+├─ schema.sql                  # create DB, RLS, RPC
+└─ server.js                   # backend main service
 
 ## 📄 License
 
