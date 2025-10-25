@@ -160,7 +160,7 @@ DECO3500-Vistic/
 └── server.js                # Backend main service file for the application
 ```
 
----s
+---
 ## 📄 License
 
 This is a university capstone project. Not intended for commercial use.
