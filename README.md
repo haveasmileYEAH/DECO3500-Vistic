@@ -172,7 +172,7 @@ Audience: http://172.20.10.5:3000/audience?code=XXXXXX
 
 Display: http://172.20.10.5:3000/display?code=XXXXXX
 
-### 4. Run the Game by Localhost or IPv4
+### 5. Run the Game by Localhost or IPv4
 1. Use the Player1 to generate and apply the room code.
 2. Copy the room code and apply for the Player2, Audience and Display page.
 3. Select a category and click "Quiz in Progress"
