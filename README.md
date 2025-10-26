@@ -161,6 +161,8 @@ DECO3500-Vistic/
 │   ├── data/                # question data
 │   ├── js/                  # JavaScript files
 │
+├── docs/                    # Project Poster and two Promotional Brochures
+│
 ├── .gitignore               # Files/folders to exclude from Git
 ├── .env                     # Files/folders to exclude from Git (Provide upon assignment submission)
 ├── audience.html            # audience.html code
