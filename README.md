@@ -50,9 +50,16 @@ You only need to choose one method to set up your environment; we recommend tryi
 
 1. If your operation system is Windows11 or MacOS, you can try the following command to run the project,    however the command are the shortcut, but if it works, you will not need to install the docker and set it up.
 
-Windows11: winget install --id OpenJS.NodeJS.LTS (bash)
+Windows11(bash): 
 
-MacOS: brew install node (zsh)
+```bash
+winget install --id OpenJS.NodeJS.LTS
+```
+
+MacOS(zsh): 
+```bash
+brew install node 
+```
 
 2. If the Shortcut is not working, you can use the official website to finish the Node.js installation and setup, refer to the official documentation for your operating system:
 
@@ -62,11 +69,16 @@ The page provide comprehensive instructions for installation, configuration, and
 
 3. After you download, please use the following commands to verify the installation was successful.
 
+```bash
 node -v 
+
 npm -v 
+```
 
 if install successfully, the above commands will print:
+
 "v22.20.0" or higher
+
 "v10.9.3" or higher
 
 ---
@@ -74,29 +86,35 @@ if install successfully, the above commands will print:
 # Installation & Setup
 After you successfully finish the Node.js Installation steps, use the command to install the dependents:
 
+```bash
 npm ci
+```
 
 After you successfully finish install the dependents, you will see:
 
 "Run `npm audit` for details."
 
 ### 1. Connect with the Supabase.
-The .env file contains all keys for direct connection to Supabase and should be placed directly in the root directory.
-
-The .env file is included in the commit results. Please download the file and place it in the root directory.
+The .env file contains all keys for direct connection to Supabase and should be placed directly in the root directory. Which is included in the commit results. Please download the file and place it in the root directory.
 
 ### 2. Run project code
 After the installation and setup are successfully finished, use the following command to run the code:
 
+```bash
 npm start
+```
 
 If the code is run successfully, you can see the following output:
 
 "> socketio-kahoot@1.0.0 start"
+
 "> socketio-kahoot@1.0.0 start"
 "> node server.js"
+
 "[dotenv@17.2.3] injecting env (3) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit"
+
 "listening on *:3000"
+
 "Permanent practice room code: LEARN01"
 
 ### 3. Use the localhost to run the game
@@ -117,13 +135,21 @@ Our system also supports connecting various devices via a local area network, in
 
 2.  Locate your IPv4 network address using the following commands:
 
-    Windows: ipconfig
-    MacOS: ifconfig
+  Windows: 
 
+`````bash
+    ipconfig
+`````
+  MacOS:
+`````bash
+    ifconfig
+`````
 3. Locate your IPv4 address in the output, typically formatted as:
 
     10.x.x.x
+
     172.16.x.x ~ 172.31.x.x
+
     192.168.x.x
 
 4. Use your IPv4 address to access the webpage
@@ -132,7 +158,9 @@ Assuming your IPv4 address is: 172.20.10.5
 
 After finding your IPv4 address, run the code using the command:
 
+```bash
 npm start
+```
 
 Once successfully running, use your IPv4 address as the host address in the link to connect:
 
