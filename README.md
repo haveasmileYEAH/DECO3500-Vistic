@@ -10,7 +10,7 @@
   - [2. Run project code](#2-run-project-code)
   - [3. Use the localhost to run the game](#3-use-the-localhost-to-run-the-game)
   - [4. Use the IPv4 address to run the game](#4-use-the-ipv4-address-to-run-the-game)
-  - [4. Run the Game by Localhost or IPv4](#4-run-the-game-by-localhost-or-ipv4)
+  - [5. Run the Game by Localhost or IPv4](#5-run-the-game-by-localhost-or-ipv4)
 - [Directory Tree](#directory-tree)
 - [License](#license)
 
