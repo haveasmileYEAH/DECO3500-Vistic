@@ -180,8 +180,8 @@ Display: http://172.20.10.5:3000/display?code=XXXXXX
 
 ### 5. Run the Game by Localhost or IPv4
 1. Use Player1 to generate and apply the room code.
-2. Copy the room code and apply to the Player2, Audience and Display page.
-3. Select a category and click "Quiz in Progress"
+2. Copy the room code and apply it to the Player2, Audience and Display page.
+3. Select a category and click "Start Quiz"
 4. (If you run the game by IPv4) Join the same Audience page with the same room code by scanning the QR code in the Display page after you apply the room code that you applied in Player1.
 
 # Directory Tree
