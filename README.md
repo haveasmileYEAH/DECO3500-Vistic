@@ -137,13 +137,13 @@ Our system also supports connecting various devices via a local area network, in
 
   Windows: 
 
-`````bash
-    ipconfig
-`````
+```bash
+ipconfig
+```
   MacOS:
-`````bash
-    ifconfig
-`````
+```bash
+ifconfig
+```
 3. Locate your IPv4 address in the output, typically formatted as:
 
     10.x.x.x
