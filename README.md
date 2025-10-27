@@ -1,4 +1,4 @@
-# VISTIC - TRUTHQUEST: Community Based Fake News Verification.
+# VISTIC - TRUTHQUEST: Community-Based Fake News Verification.
 
 ## Table of Contents
 - [Introduction](#introduction)
@@ -18,7 +18,7 @@
 ## Introduction 
 Welcome to the source code for Team VISTIC, developed for Social and Mobile Computing (DECO3500).
 
-We proudly present our project: TRUTHQUEST - A community based fake news verification street challenge program, a web-based system designed to provide a simulated environment for the creation of fake news and its resulting impacts to the university students.
+We proudly present our project: TRUTHQUEST - A community-based fake news verification street challenge program, a web-based system designed to provide a simulated environment for the creation of fake news and its resulting impacts to the university students.
 
 Through research on existing social networks, we have observed that numerous open social platforms, including X (formerly Twitter) and Facebook, employ a method called “crowdsourced voting” to reduce the speed and reach of fake news. First introduced on the X (Twitter) platform, crowdsourced voting enables users from diverse industries, locations, genders, and identity backgrounds to evaluate the same piece of information. Based on the voting results, it helps other users identify whether the content constitutes fake news.
 
@@ -48,7 +48,7 @@ Before setting up the project, ensure you have the following installed:
 
 You only need to choose one method to set up your environment; we recommend trying “1. Quick Install” first. If you encounter difficulties installing Node, you can directly use “2. The Docker method provided on the official website”.
 
-1. If your operation system is Windows11 or MacOS, you can try the following command to run the project,    however the command are the shortcut, but if it works, you will not need to install the docker and set it up.
+1. If your operating system is Windows 11 or macOS, you can try the following command to run the project;    however, the command is a shortcut, but if it works, you will not need to install Docker and set it up.
 
 Windows11(bash): 
 
@@ -65,7 +65,7 @@ brew install node
 
 - https://nodejs.org/en/download
 
-The page provide comprehensive instructions for installation, configuration, and best practices tailored to each platform.
+The page provides comprehensive instructions for installation, configuration, and best practices tailored to each platform.
 
 3. After you download, please use the following commands to verify the installation was successful.
 
@@ -75,7 +75,7 @@ node -v
 npm -v 
 ```
 
-if install successfully, the above commands will print:
+If installed successfully, the above commands will print:
 
 "v22.20.0" or higher
 
@@ -84,13 +84,19 @@ if install successfully, the above commands will print:
 ---
 
 # Installation & Setup
-After you successfully finish the Node.js Installation steps, use the command to install the dependents:
+After you successfully finish the Node.js Installation steps, clone the project
+
+```bash
+git clone https://github.com/haveasmileYEAH/DECO3500-Vistic.git
+```
+
+After that, use the command to install the dependencies:
 
 ```bash
 npm ci
 ```
 
-After you successfully finish install the dependents, you will see:
+After you successfully finish installing the dependencies, you will see:
 
 "Run `npm audit` for details."
 
@@ -173,10 +179,10 @@ Audience: http://172.20.10.5:3000/audience?code=XXXXXX
 Display: http://172.20.10.5:3000/display?code=XXXXXX
 
 ### 5. Run the Game by Localhost or IPv4
-1. Use the Player1 to generate and apply the room code.
-2. Copy the room code and apply for the Player2, Audience and Display page.
+1. Use Player1 to generate and apply the room code.
+2. Copy the room code and apply to the Player2, Audience and Display page.
 3. Select a category and click "Quiz in Progress"
-4. (If you run the game by IPv4) Join the same Audience page with same room code by scanning the QR code in Display page after you apply the room code that you applied in Player1.
+4. (If you run the game by IPv4) Join the same Audience page with the same room code by scanning the QR code in the Display page after you apply the room code that you applied in Player1.
 
 # Directory Tree
 ```bash
@@ -200,7 +206,7 @@ DECO3500-Vistic/
 ├── player1.html             # player1.html code
 ├── player2.html             # player2.html code
 ├── README.md                # Project documentation
-├── schema.sql               # SQL commands for create the database
+├── schema.sql               # SQL commands for creating the database
 └── server.js                # Backend main service file for the application
 ```
 
